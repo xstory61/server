@@ -24,6 +24,9 @@ package net.server.channel.handlers;
 import constants.ServerConstants;
 import client.MapleCharacter;
 import client.MapleClient;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.AbstractMaplePacketHandler;
 import net.SendOpcode;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -46,9 +49,17 @@ public final class FamilyUseHandler extends AbstractMaplePacketHandler {
             victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
             if (victim != null) {
                 if (type == 0) {
-                    c.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));
+                   
+                        c.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));
+                  
+                    
+                    
                 } else {
-                    victim.changeMap(c.getPlayer().getMap(), c.getPlayer().getMap().getPortal(0));
+                  
+                        victim.changeMap(c.getPlayer().getMap(), c.getPlayer().getMap().getPortal(0));
+                    
+                   
+                    
                 }
             } else {
                 return;

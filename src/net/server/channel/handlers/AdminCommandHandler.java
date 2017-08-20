@@ -39,6 +39,9 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class AdminCommandHandler extends AbstractMaplePacketHandler {
 
@@ -122,7 +125,9 @@ public final class AdminCommandHandler extends AbstractMaplePacketHandler {
             case 0x12: // Send
                 victim = slea.readMapleAsciiString();
                 int mapId = slea.readInt();
-                c.getChannelServer().getPlayerStorage().getCharacterByName(victim).changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
+        
+            c.getChannelServer().getPlayerStorage().getCharacterByName(victim).changeMap(c.getChannelServer().getMapFactory().getMap(mapId));
+       
                 break;
             case 0x15: // Kill
                 int mobToKill = slea.readInt();
@@ -131,7 +136,9 @@ public final class AdminCommandHandler extends AbstractMaplePacketHandler {
                 for (int x = 0; x < amount; x++) {
                     MapleMonster monster = (MapleMonster) monsterx.get(x);
                     if (monster.getId() == mobToKill) {
-                        c.getPlayer().getMap().killMonster(monster, c.getPlayer(), true);
+                       
+                            c.getPlayer().getMap().killMonster(monster, c.getPlayer(), true);
+                      
                         monster.giveExpToCharacter(c.getPlayer(), monster.getExp(), true, 1);
                     }
                 }

@@ -79,6 +79,7 @@ import server.partyquest.MonsterCarnival;
 import server.partyquest.MonsterCarnivalParty;
 import server.partyquest.Pyramid;
 import scripting.event.EventInstanceManager;
+import server.events.TriviaEvents;
 import server.life.MonsterListener;
 import tools.FilePrinter;
 import tools.MaplePacketCreator;
@@ -140,6 +141,7 @@ public class MapleMap {
     private MapleSnowball snowball0 = null;
     private MapleSnowball snowball1 = null;
     private MapleCoconut coconut;
+    private TriviaEvents te;
     //locks
     private final ReadLock chrRLock;
     private final WriteLock chrWLock;
@@ -1368,6 +1370,14 @@ public class MapleMap {
             broadcastMessage(MaplePacketCreator.serverNotice(6, "The Moon Bunny is feeling sick. Please protect it so it can make delicious rice cakes."));
             bunnyDamage = 0;
         }
+    }
+    // Additions
+      public void setTriviaEvents(TriviaEvents te) {
+        this.te = te;
+    }
+    
+    public TriviaEvents getTriviaEvents() {
+        return te;
     }
 
     private void monsterItemDrop(final MapleMonster m, final Item item, long delay) {

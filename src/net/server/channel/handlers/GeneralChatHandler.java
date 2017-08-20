@@ -27,54 +27,88 @@ import tools.data.input.SeekableLittleEndianAccessor;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.autoban.AutobanFactory;
+import client.command.CommandProcessor;
 import client.command.Commands;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import server.events.TriviaEvents;
 
 public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
 	@Override
         public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
                 String s = slea.readMapleAsciiString();
-                MapleCharacter chr = c.getPlayer();
-                if(chr.getAutobanManager().getLastSpam(7) + 200 > System.currentTimeMillis()) {
-                        c.announce(MaplePacketCreator.enableActions());
-                        return;
-                }
-                if (s.length() > Byte.MAX_VALUE && !chr.isGM()) {
-                        AutobanFactory.PACKET_EDIT.alert(c.getPlayer(), c.getPlayer().getName() + " tried to packet edit in General Chat.");
-                        FilePrinter.printError(FilePrinter.EXPLOITS + c.getPlayer().getName() + ".txt", c.getPlayer().getName() + " tried to send text with length of " + s.length() + "\r\n");
-                        c.disconnect(true, false);
-                        return;
-                }
-                char heading = s.charAt(0);
-                if (heading == '/' || heading == '!' || heading == '@') {     // client seems to not send command with '/' heading to the server, if not a GM account
-                        String[] sp = s.split(" ");
-                        sp[0] = sp[0].toLowerCase().substring(1);
-
-                        if(Commands.executeSolaxiaPlayerCommand(c, sp, heading)) {
-                            String command = "";
-                            for (String used : sp) {
-                                    command += used + " ";
-                            }
-
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-                            FilePrinter.print(FilePrinter.USED_COMMANDS, c.getPlayer().getName() + " used: " + heading + command + "on " + sdf.format(Calendar.getInstance().getTime()) + "\r\n");
-                        }            
+                MapleCharacter chr = c.getPlayer(); 
+                TriviaEvents te = chr.getMap().getTriviaEvents();
+               
+                if (CommandProcessor.isCommand(s, chr)) {                    
+                     CommandProcessor.executeCommand(c, s);                    
+                      return ;        
+               
                 } else {
                         int show = slea.readByte();
                         if(chr.getMap().isMuted() && !chr.isGM()) {
                                 chr.dropMessage(5, "The map you are in is currently muted. Please try again later.");
                                 return;
                         }
-
                         if (!chr.isHidden()) {
                                 chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), s, chr.getWhiteChat(), show));	
                         } else {
                                 chr.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(chr.getId(), s, chr.getWhiteChat(), show));
                         }
+                        if(te.isActive()) {
+                         switch(te.getEvent()) {
+                        default:
+                            System.out.println("Invalid game type.");
+                            break;
+                        case 1:
+                            if(s.equals(te.getResult())) {
+                             te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Hitman] " + chr.getName() + " has gotten the hitman correctly!"));
+                            }
+                            break;
+                        case 2:
+                            if(s.equals(te.getResult())) {
+                               te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Blink] " + chr.getName() + " has gotten the blink correctly!"));
+                            }
+                            break;
+                        case 3:
+                            if(s.equals(te.getResult())) {
+                                te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Unscramble] " + chr.getName() + " has gotten the unscramble correctly!"));
+                            }
+                            break;
+                        case 4:
+                            if(s.equals(te.getResult())) {
+                                 te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Reverse] " + chr.getName() + " has gotten the reverse text correctly!"));
+                            }
+                            break;
+                        case 5:
+                            if(s.equals(te.getResult())) {
+                                  te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[SpeedType] " + chr.getName() + " has gotten the speedtype text correctly!"));
+                            }
+                            break;
+                        case 6:
+                            if(s.toLowerCase().equals(te.getResult())) {
+                                 te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Scategories] " + chr.getName() + " has gotten it correctly!"));
+                            }
+                            break;
+                        case 7:
+                            if(s.equals(te.getResult())) {
+                                  te.setActive(false);  
+                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[NTI] " + chr.getName() + " has gotten the item correctly!"));
+                               chr.getMap().clearDrops();
+                            }
+                            break;
+                            
+                    }
 
-                        chr.getAutobanManager().spam(7);
+                     
                 }
         }
+     }
 }
 
