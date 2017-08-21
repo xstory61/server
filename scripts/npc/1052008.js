@@ -23,11 +23,15 @@
 */
 
 function start() {
-    prizes = [4020000,4020001,4020002,4020003,4020004];
-    if (cm.isQuestStarted(2055))
-        cm.gainItem(4031039,1);
-    else
-        cm.gainItem(4020000 + ((Math.random()*5)|0), 1);
-    cm.warp(103000100);
+	if(cm.getPlayer().isClosetoJqfin()){
+	cm.Finishjq();
+  // cm.getClient().getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(6,cm.Finishjq());
+  //cm.getPlayer().dropMessage(6,"hi");
+   cm.warp(910000000);
     cm.dispose();
+	}
+	else{
+		cm.getPlayer().dropMessage(5,"You're too far! Get closer!");
+		cm.dispose();
+	}
 }

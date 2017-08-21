@@ -31,19 +31,64 @@
 ---------------------------------------------------------------------------------------------------
 **/
 
-function start() {
-    if (cm.haveItem(4001019))
-        cm.sendYesNo("You can use #b#t4001019#k to activate #b#p2012014##k. Will you teleport to where #b#p2012015##k is?");
-    else {
-        cm.sendOk("There's a #b#p2012014##k that'll enable you to teleport to where #b#p2012015##k is, but you can't activate it without the scroll.");
+menu = ["Snails","Papulatus Clock","Headless Horseman","Black Crow","Anego","Rooster","BigFoot","MushMom"];
+mob = [100100,8500001,9400549,9400014,9400121,9600001,9400575,9500124];
+hp = [23000000,3500000,35000000,75000000,340,32000000,20000];
+exp = [596000,300000,1780000,3900000,33,2660000,1200];
+pServ = "Memoryv83";
+var status = 0;
+
+function start() { /*
+    if (cm.getMap().getMonsters().size() > 0)
+        cm.sendOk("Sorry, there are some mobs already spawned. Kill them first.");
         cm.dispose();
-    }
+    else{
+        cm.sendNext("I summon Bosses for #b"+pServ+"#k. I summon 10 monsters at a time for free.");
+    } */
+	action(1,0,0);
 }
 
-function action(mode, type, selection) {
-    if (mode > 0) {
-        cm.gainItem(4001019, -1);
-        cm.warp(200082100);
+function action(m,t,s) {
+    if (m > 0)
+        status++;
+    else{
+        cm.dispose();
+        return;
     }
-    cm.dispose();
-}
+    if (status == 1) {
+        talk = "Please remember I will summon 10.\r\n\r\n";
+        for (var i = 0; i < menu.length; i++)
+            talk += "#L"+i+"#"+menu[i]+"#l\r\n";
+        cm.sendSimple(talk + "#L8#Cleardrops#l\r\n#L9#Kill All Monsters#l");
+		status++;		
+    }   	 
+	else if (status > 1) {
+        if (s == 8) {
+            cm.getClient().getPlayer().getMap().clearDrops();
+		//	cm.sendNext("s7");
+			cm.dispose();
+        } else if (s == 9) {
+            cm.getClient().getPlayer().getMap().killAllMonsters();
+		// cm.sendNext("s8");
+			cm.dispose();
+        }else{
+			// cm.sendNext("s1-6");
+			// cm.getClient().getPlayer().getMap().summonMob(mob[s],hp[s],exp[s],10);
+			// cm.dispose();
+			if(!cm.getClient().getPlayer().getMap().mobsAlive(cm.getClient().getPlayer())){
+			 for(var i = 0; i < 10; i++){
+			 // cm.getClient().getPlayer().getMap().spawnMonsterOnGroudBelow(MapleLifeFactory.getMonster(mob[s]), cm.getClient().getPlayer().getPosition());
+			 cm.spawnMob(mob[s]);
+			// cm.sendNext("heya");
+			  }
+			}
+			else{ 
+			  cm.sendOk("Please kill all the mobs currently spawned inorder to spawn more!");
+			}
+		  //  cm.summonMob(mob[s],hp[s],exp[s],10);
+		   cm.dispose();
+        }
+        //cm.dispose();
+		}
+    }  
+  

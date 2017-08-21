@@ -1,153 +1,69 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
-@	Author : Twdtwd
-@       Author : Ronan
-@
-@	NPC = Blue Balloon
-@	Map = Hidden-Street <Stage 8>
-@	NPC MapId = 922010800
-@	Function = LPQ - 8 Stage
-@
-@	Description: Used to find the combo to unlock the next door. Players stand on 5 different crates to guess the combo.
-*/
-
-function generateCombo() {
-	var countPicked = 0;
-	var positions = Array(0,0,0,0,0,0,0,0,0);
-	while(countPicked < 5) {
-		var picked = Math.floor(Math.random() * positions.length);
-		if(positions[picked] == 1) // Don't let it pick one its already picked.
-			continue;
-			
-		positions[picked] = 1;
-		countPicked++;
-	}
-	
-	var returnString = "";
-	for(var i = 0; i < positions.length; i++) {
-		returnString += positions[i];
-		if(i != positions.length - 1)
-		returnString += ",";
-	}
-	
-	return returnString;
-	
-}
-
-var debug = false;
+importPackage(Packages.server.minigames);
+importPackage(Packages.server.minigames.solo);
+importPackage(Packages.server.minigames.pvp);
 var status = 0;
-var curMap, stage;
-
-function clearStage(stage, eim, curMap) {
-    eim.setProperty(stage + "stageclear", "true");
-    eim.showClearEffect(true);
-    
-    eim.linkToNextStage(stage, "lpq", curMap);  //opens the portal to the next map
-}
+var sel = 0;
 
 function start() {
-    curMap = cm.getMapId();
-    stage = Math.floor((curMap - 922010100) / 100) + 1;
-    
-    status = -1;
-    action(1, 0, 0);
+	action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-            if (mode == -1) {
-            cm.dispose();
-        } else if (mode == 0){
-            cm.dispose();
-        } else {
-                if (mode == 1)
-                        status++;
-                else
-                        status--;
-                    
-                var eim = cm.getPlayer().getEventInstance();
-                
-                if(eim.getProperty(stage.toString() + "stageclear") != null) {
-                        cm.sendNext("Hurry, goto the next stage, the portal is open!");
-                }
-                else {
-                        if (eim.isEventLeader(cm.getPlayer())) {
-                                var state = eim.getIntProperty("statusStg" + stage);
-
-                                if(state == -1) {           // preamble
-                                        cm.sendOk("Hi. Welcome to the #bstage " + stage + "#k. In this stage, line up 5 member of your party above those boxes in order to form the right combination to unlock the next stage. Only one player should stay above a box desired to pertain the combination.");
-                                        
-                                        var st = (debug) ? 2 : 0;
-                                        eim.setProperty("statusStg" + stage, st);
-                                }
-                                else {       // check stage completion
-                                        if(state == 2) {
-                                                eim.setProperty("statusStg" + stage, 1);
-                                                clearStage(stage, eim, curMap);
-                                                cm.dispose();
-                                                return;
-                                        }
-                                    
-                                        objset = [0,0,0,0,0,0,0,0,0];
-                                        var playersOnCombo = 0;
-                                        var map = cm.getPlayer().getMap();
-                                        var party = cm.getEventInstance().getPlayers();
-                                        for (var i = 0; i < party.size(); i++) {
-                                            for (var y = 0; y < map.getAreas().size(); y++) {
-                                                if (map.getArea(y).contains(party.get(i).getPosition())) {
-                                                    playersOnCombo++;
-                                                    objset[y] = 1;
-                                                    //cm.mapMessage(5, "Player found on " + (y + 1));
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (playersOnCombo == 5 || cm.getPlayer().gmLevel() > 1) {
-                                            var combo = eim.getProperty("stage" + stage + "combo").split(',');
-                                            var correctCombo = true;
-                                            for (i = 0; i < objset.length && correctCombo; i++)
-                                                if (parseInt(combo[i]) != objset[i]) {
-                                                    //cm.mapMessage(5, "Combo failed on " + (i + 1));
-                                                    correctCombo = false;
-                                                }
-                                            if (correctCombo || cm.getPlayer().gmLevel() > 1) {
-                                                eim.setProperty("statusStg" + stage, 1);
-                                                clearStage(stage, eim, curMap);
-                                                cm.dispose();
-                                            } else {
-                                                eim.showWrongEffect();
-                                                cm.dispose();
-                                            }
-                                        } else {
-                                            cm.sendNext("It looks like you haven't found the 5 boxes just yet. Please think of a different combination of boxes. Only 5 are allowed to stand on boxes, and if you move it may not count as an answer, so please keep that in mind. Keep going!");
-                                            cm.dispose();
-                                        }
-                                }
-                        } else {
-                                cm.sendNext("Please tell your #bParty-Leader#k to come talk to me.");
-                        }
-                }
-                
-                cm.dispose();
-        }
+	if(mode < 1) {
+		cm.dispose();
+		return;
+	} else {
+		status++;
+	}
+	if(status == 1) {
+		if(cm.getPlayer().getMapId() != 101000004) {
+			cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "hitman"));
+			var score = cm.getPlayer().getGameManager().getDatabase().getUserScore();
+			cm.getPlayer().setGameManager(null);
+			cm.sendSimple("\t\t\t\t\t\t\t\t\t\t\t  #e[Hitman]#n\r\n\t\t\t\t\t\t\t\t\t  #d#eDIFFICULTY:#r Hard#n#b\r\n\t\t\t\t\t\t\t\t#L0#Start Game #k#e(Solo)#n#l#b\r\n\t\t\t\t\t\t\t\t#L1#Start Game #k#e(PVP)#n#l\r\n\r\n\t\t\t\t\t\t\t\t\t\t #kYour score: " + (score > 0 ? score : 0));
+		} else {
+			cm.sendYesNo("Would you like to leave this game?");
+			sel = 1;
+		}
+	} else if (status == 2) {
+		if(sel == 0) {			
+			if(selection == 0) {
+				cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "hitman"));
+				cm.getPlayer().getGameManager().createInstancedMap();
+				cm.getPlayer().getGameManager().startGame(Hitman.class, false);
+			} else {
+				if(cm.getPlayer().getParty() != null) {
+					if(cm.isLeader()) {
+						var party = cm.getPlayer().getParty().getMembers();
+						var inMap = cm.partyMembersInMap(101000004);
+						if(party.size() == 2) {
+							if(inMap == party.size()) {
+								var opponent = cm.getClient().getChannelServer().getPlayerStorage().getCharacterByName(party.get(1).getName());
+								var map = cm.createInstancedMap();
+								cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), opponent, map, "hitman"));
+								cm.getPlayer().getGameManager().startGame(HitmanPVP.class, true);								
+							} else {
+								cm.sendOk("\t\t\t\t\t\t\t\t\t\t\t  #e[Hitman]#n\r\n\t\t\t\t\tPlease make sure all members are in the map.");
+							}
+						} else {
+							cm.sendOk("\t\t\t\t\t\t\t\t\t\t\t  #e[Hitman]#n\r\n\t\t\t\t\tPlease make sure you have 2 in your party.");
+						}
+					} else {
+						cm.sendOk("\t\t\t\t\t\t\t\t\t\t\t  #e[Hitman]#n\r\n\t\t\t\t\t\tPlease make sure you are the leader.");
+					}
+				} else {
+					cm.sendOk("\t\t\t\t\t\t\t\t\t\t\t  #e[Hitman]#n\r\n\t\t\t\t\t\t\t\t\tPlease get into a party.");
+				}
+			}
+			cm.dispose();
+		} else if(sel == 1) {
+			if(cm.getPlayer().getGameManager() != null) {
+				cm.getPlayer().getGameManager().getCurrentGame().endGame();
+				cm.dispose();
+				return;
+			}
+			cm.warp(325090000);
+			cm.dispose();
+		}
+	}
 }

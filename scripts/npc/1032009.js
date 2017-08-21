@@ -1,49 +1,86 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
-Purin (On Boat ) 1032009
-**/
-
+var id = new Array();
 var status = 0;
+var thing = 0;
+var slot;
+var p = null;
 
 function start() {
-    action(1, 0, 0);
+    status = -1;
+    cm.sendSimple("Select option\r\n\r\n"
+		+ "#L0#Face#l\r\n\r\n"
+		+ "#L1#Hair#l");
 }
 
+
 function action(mode, type, selection) {
-    if (status == 0) {
-        cm.sendYesNo("Do you wish to leave the boat?");
-        status++;
+    if (mode == -1) {
+        cm.dispose();
     } else {
-        if (mode < 1) {
+        if (mode == 2 && status == 0) {
             cm.dispose();
-        } else {
-            if (status == 1) {
-                cm.sendNext ("Alright, see you next time. Take care.");
-                status++;
-            } else if (status == 2) {
-                cm.warp(101000300, 0);// back to orbis
-                cm.dispose();
-            }
+            return;
         }
+        if (mode == 1)
+            status++;
+        else
+            status--;
+		
+		if (p == null) {
+			p = selection;
+		}
+        
+		switch (p) {
+			case 0:
+				setFace(selection);
+				break;
+			case 1:
+				setHair(selection);
+				break;
+			default:
+				cm.sendOk("This operation is not handled");
+				cm.dispose();
+				break;
+		}
     }
 }
+
+function setHair(sel) {
+	if (status == 0) {
+		cm.sendGetText("#eHey #h #! I can check a hair id for you.  \r\n\r\n#rPlease enter the hair ID:");           
+	} else if (status == 1) {
+		id[0] = cm.getText();  
+		var str = "" + id[0];
+		if (str.length == 5/* && str.charAt(4).equals("0")*/) {
+			cm.sendStyle("Choose a style!", id);
+		} else  {
+			cm.getPlayer().dropMessage("The number must be 5 digits long!");
+			start(); // restart
+		}
+
+	} else if (status == 2) {
+		cm.setHair(id[0]);
+		cm.getPlayer().dropMessage("Hair ID Tested: " + id[0]);
+		cm.dispose();
+	} 
+}
+
+function setFace(sel) {
+	if (status == 0) {
+		cm.sendGetText("#eHey #h #! I can check a FACE id for you.  \r\n\r\n#rPlease enter the FACE ID:");           
+	} else if (status == 1) {
+		id[0] = cm.getText();  
+		var str = "" + id[0];
+		if (str.length == 5/* && str.charAt(4).equals("0")*/) {
+			cm.sendStyle("Choose a style!", id);
+		} else  {
+			cm.getPlayer().dropMessage("The number must be 5 digits long!");
+			start(); // restart
+		}
+
+	} else if (status == 2) {
+		cm.setFace(id[0]);
+		cm.getPlayer().dropMessage("FACE ID Tested: " + id[0]);
+		cm.dispose();
+	} 
+}
+

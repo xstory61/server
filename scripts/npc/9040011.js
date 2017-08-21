@@ -1,25 +1,55 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+var status = 0;
+gms = ["yuffy","rabbit","Kanwar","Roy","danny","Wizet","Iced","xxxx","autist","acorn","clear","lolzer","azn"];
 function start() {
-    cm.sendOk("<Notice> \r\n Are you part of a Guild that possesses an ample amount of courage and trust? Then take on the Guild Quest and challenge yourselves!\r\n\r\n#bTo Participate :#k\r\n1. The Guild must consist of at least 6 people!\r\n2. The leader of the Guild Quest must be a Master or a Jr. Master of the Guild!\r\n3. The Guild Quest may end early if the number of guild members participating falls below 6, or if the leader decides to end it early!");
-    cm.dispose();
+ 
+    action(1, 0, 0);
+}
+
+function action(mode, type, selection) {
+	if(mode < 1){
+		cm.dispose();
+	}
+	else{
+		if(status == 0){
+		    var msg = "#r#e ------------------------------------------------------------------------------ #k#n\r\n\t\t\t\t\t\t\t\t\t\t #r#e Bulletin Board\r\n#k#n#r#e ------------------------------------------------------------------------------ #k#n\r\n";
+			msg += "\t\t\t#eInfo#n\t\t\t\t\t\t\t\t#eMisc#n\t\t\t\t\t\t\t#eActions#n\r\n";
+			cm.sendSimple(msg +"#L0#Staff List#l\t\t\t\t#L5#Gm Commands#l\t\t#L3#Unmute#l\r\n#L2#Server Updates#l\t#L1#Events Won#l\r\n#L4#Forum Events#l");
+		    status++;
+		} else if(status == 1){
+			if(selection == 2){
+				var text = cm.getClient().getWorldServer().getBoardInfo();
+				cm.sendOk(text);
+				cm.dispose();
+			}
+			else if(selection == 0){
+				var staff = cm.getBoardStaff();
+				cm.sendSimple(staff);
+			    status++;
+			}
+			else if(selection == 1){
+				var event = cm.eventsWon();
+				cm.sendOk(event);
+				cm.dispose();
+			}
+			else if(selection == 4){
+				var forum = cm.getClient().getWorldServer().getBoardEvents();
+				cm.sendOk(forum);
+				cm.dispose();
+			}
+			else if(selection == 5){
+				var coms = cm.getClient().getWorldServer().getBoardGm();
+				cm.sendOk(coms);
+				cm.dispose();
+			}
+			else if(selection == 3){
+				cm.getPlayer().setMuted(false);
+				cm.getPlayer().dropMessage(6,"You've been unmuted");
+				cm.dispose();
+			}
+		} else if(status == 2){
+			var details = cm.getClient().getWorldServer().getBoardDetails(gms[selection]);
+			cm.sendOk(details);
+			cm.dispose();
+		}			
+	}
 }

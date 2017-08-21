@@ -19,7 +19,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+items = [1302000];
+var status = 0;
+
 function start() {
-    cm.sendNext("I miss my sister... She's always working at the palace as the servant and I only get to see her on Sundays. The King and Queen are so selfish.");
-    cm.dispose();
+    action(1,0,0);
+}
+function action(m,t,s){
+	if(status == 0){
+		var talk = "Pick out of the following items \r\n";
+		cm.sendSimple("Pick out of the following items")
+		for(var i=0; i < items.length();i++)
+			talk+= "#L"+i+"#"+items[i]+"#l";
+		status++;
+		
+	}
+	else if(status == 1){
+		cm.gainItem(items[s]);
+		cm.dispose();
+	}
 }

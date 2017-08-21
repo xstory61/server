@@ -21,56 +21,89 @@
 */
 /* @Author Jvlaple */
 
-var minLevel = 40;
-var maxLevel = 255;
-var minPlayers = 0;
-var maxPlayers = 6;
-//var minMarried = 6;
-//var minGirls = 1;
-//var minBoys = 1;
+tier1 = [1702263,1702266,1702277,1702295,1702335,1000015,1000016,1002225,1002716,1002717,1002959,1003072,1003268,1003269];
+tier2 = [1702265,1702267,1702325,1702340,1702361,1702433,1702454,1702455,1003216,1003409,1003500,1003501,1003517,1003518,1003536,1003186,1003187];
+tier3 = [1702286,1702408,1702423,1702440,1702442,1702453,1702456,1702457,1402503,1402513,1442298,1003422,1003674,1003829,1045008];
+var status = 0;
+
+var counter = 0;
 
 function start() {
-    if (cm.getParty() == null) {
-        cm.sendOk("Please come back to me after you've formed a party.");
-        cm.dispose();
-        return;
-    }
-    if (!cm.isLeader()) {
-        cm.sendOk("You are not the party leader.");
-        cm.dispose();
-    } else {
-        var party = cm.getParty().getMembers();
-        var next = true;
-        var levelValid = 0;
-        var inMap = 0;
-        if (party.size() < minPlayers || party.size() > maxPlayers)
-            next = false;
-        else {
-            for (var i = 0; i < party.size() && next; i++) {
-                if ((party.get(i).getLevel() >= minLevel) && (party.get(i).getLevel() <= maxLevel))
-                    levelValid++;
-                if (party.get(i).getMapid() == cm.getPlayer().getMapId())
-                    inMap++;
-            }
-            if (levelValid < minPlayers || inMap < minPlayers)
-                next = false;
-        }
-        if (next) {
-            var em = cm.getEventManager("AmoriaPQ");
-            if (em == null)
-                cm.dispose();
-            else {
-                if(!em.startInstance(cm.getParty(),cm.getPlayer().getMap())) {
-                    cm.sendOk("A party in your name is already registered in this event.");
-                    cm.dispose();
-                    return;
-                }
-            }
-            cm.dispose();
-        }
-        else {
-            cm.sendOk("Your party is not a party of six.  Make sure all your members are present and qualified to participate in this quest.  I see #b" + levelValid.toString() + " #kmembers are in the right level range, and #b" + inMap.toString() + "#k are in my map. If this seems wrong, #blog out and log back in,#k or reform the party.");
-            cm.dispose();
-        }
-    }
+    action(1,0,0);
+}
+function action(m,t,s){
+	if(status == 0){
+		var talk = "Pick out of the following items! \r\n";	
+            
+	  
+	  talk+= " \r\n\r\n \t\t\t\t\t\t\t\t\t #eTier 1 - 10EP Each \r\n";
+		for(var i=0; i < tier1.length;i++)			
+			talk+= "#L"+i+"##i"+tier1[i]+"#";		
+		talk+= "#l \r\n\r\n \t\t\t\t\t\t\t\t\t  Tier 2 - 15EP Each \r\n";
+		
+		
+		for(var j=0; j< tier2.length;j++){
+			counter = i + j;
+			talk+= "#L"+counter+"##i"+tier2[j]+"#";
+		}
+        talk+= "#l \r\n\r\n \t\t\t\t\t\t\t\t\t  Tier 3 - 20EP Each \r\n";	
+	
+		
+		for(var k=0; k< tier3.length;k++){
+			counter = i + j + k;
+			talk+= "#L"+counter+"##i"+tier3[k]+"#";
+		}			
+	
+		
+	  cm.sendSimple(talk);
+		status++;
+		
+	}
+	else if(status == 1){ 	  
+	 /*   cm.sendOk("Heres your selection +" + s);
+		cm.dispose(); */
+		if(cm.haveSpace()){
+			if(s < tier1.length){
+				if(cm.getClient().getPlayer().getEventpoints() > 9){
+		cm.gainItem(tier1[s]);
+		cm.showItemsgained(tier1[s],1);
+		cm.getClient().getPlayer().addEventpoints(-10);
+		cm.getClient().getPlayer().dropMessage(5,"You've lost 10 Event points");
+			}
+			else
+			cm.getClient().getPlayer().dropMessage(5,"Error. You don't have enough ep!");
+			cm.dispose();
+		}		
+		else if(s > tier1.length -1 && s < tier1.length + tier2.length ){
+			if(cm.getClient().getPlayer().getEventpoints() > 14){
+		cm.gainItem(tier2[s-tier1.length]);
+		cm.showItemsgained(tier2[s-tier1.length],1);
+		cm.getClient().getPlayer().addEventpoints(-15);
+		cm.getClient().getPlayer().dropMessage(5,"You've lost 15 Event points");
+		
+			}
+			else
+			cm.getClient().getPlayer().dropMessage(5,"Error. You don't have enough ep!");
+			cm.dispose();
+		}
+		else if(s > tier1.length + tier2.length - 1 && s < tier1.length + tier2.length + tier3.length){
+			if(cm.getClient().getPlayer().getEventpoints() > 19){
+		cm.gainItem(tier3[s-(tier1.length + tier2.length)]);
+		cm.showItemsgained(tier3[s-(tier1.length + tier2.length)],1);
+		cm.getClient().getPlayer().addEventpoints(-20);
+		cm.getClient().getPlayer().dropMessage(5,"You've lost 20 Event points");
+		
+			}
+			else
+			cm.getClient().getPlayer().dropMessage(5,"Error. You don't have enough ep!");
+			cm.dispose();
+	    }		
+		else
+			cm.sendOk("You don't have enough ep!");
+			cm.dispose();
+	  }
+        else
+          cm.getClient().getPlayer().dropMessage(5,"Error. Please check if you have empty space in your inventory before trying again.");
+          cm.dispose();	  
+	}
 }

@@ -28,19 +28,28 @@ function start() {
 
 function action(mode, type, selection) {
     if (status == 0) {
-        cm.sendYesNo("Do you wish to leave the genie?");
+        cm.sendNext("\t\t\t\t\t\t\t\t\t\t#r#eDaily Reward#n#k\r\nHello! Would you like to receive your daily reward?\r\n\r\n #e#i5072000# x25 \r\n #i5076000# x10 \r\n #i4031039# x10000");
+	
         status++;
     } else {
         if (mode < 1) {
             cm.dispose();
         } else {
             if (status == 1) {
-                cm.sendNext ("Alright, see you next time. Take care.");
-                status++;
-            } else if (status == 2) {
-                cm.warp(200000151, 0);
-                cm.dispose();
-            }
+				if(cm.getClient().canDaily().equals("can")){
+					cm.getClient().getPlayer().getCashShop().gainCash(1, 10000);
+					cm.gainItem(5072000,25);	
+ 					cm.gainItem(5076000,10);	
+                    cm.showItemsgained(5072000,25);
+					cm.showItemsgained(5076000,25);
+                    cm.getClient().setDaily();					
+					cm.dispose();
+					}
+				else
+                   cm.sendOk("You've already received your daily reward! Talk to me again in #b#e" + cm.getClient().canDaily() + "#k#n hours, you brat!");
+              cm.dispose();
+		
         }
-    }
+      }
+	}
 }

@@ -22,62 +22,89 @@
 /* Denma the Owner
 	Henesys VIP Eye Change.
 */
-var status = 0;
-var beauty = 0;
-var price = 1000000;
-var mface = Array(20000, 20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20012, 20014);
-var fface = Array(21000, 21001, 21002, 21003, 21004, 21005, 21006, 21007, 21008, 21012, 21014);
-var facenew = Array();
+tier1 = [1302000, 1045000,1045001];
+tier2 = [1045002,1045003,1045006,1045009,1045010];
+tier3 = [1045004,1045005,1045007,1045008];
+var status = -1;
+
+var counter = 0;
 
 function start() {
-    status = -1;
-    action(1, 0, 0);
+    action(1,0,0);
 }
-
-function action(mode, type, selection) {
-    if (mode == -1)
-        cm.dispose();
-    else {
-        if (mode == 0 && status == 0) {
-            cm.dispose();
-            return;
-        }
-        if (mode == 1)
-            status++;
-        else
-            status--;
-        if (status == 0) {
-            cm.sendSimple("Well, hello! Welcome to the Henesys Plastic Surgery! Would you like to transform your face into something new? With a #b#t5152001##k, you can let us take care of the rest and have the face you've always wanted~!\r\n#L1#I would like to buy a #b#t5152001##k for " + price + " mesos, please!#l\r\n\#L2#I already have a Coupon!#l");
-        } else if (status == 1) {
-            if (selection == 1) {
-                if(cm.getMeso() >= price) {
-                    cm.gainMeso(-price);
-                    cm.gainItem(5152001, 1);
-                    cm.sendOk("Enjoy!");
-                } else
-                    cm.sendOk("You don't have enough mesos to buy a coupon!");
-                cm.dispose();
-            } else if (selection == 2) {
-                facenew = Array();
-                if (cm.getPlayer().getGender() == 0) {
-                    for(var i = 0; i < mface.length; i++)
-                        facenew.push(mface[i] + cm.getPlayer().getFace()% 1000 - (cm.getPlayer().getFace()% 100));
-                }
-                if (cm.getPlayer().getGender() == 1) {
-                    for(var i = 0; i < fface.length; i++)
-                        facenew.push(fface[i] + cm.getPlayer().getFace()% 1000 - (cm.getPlayer().getFace()% 100));
-                }
-                cm.sendStyle("Let's see... I can totally transform your face into something new. Don't you want to try it? For #b#t5152001##k, you can get the face of your liking. Take your time in choosing the face of your preference.", facenew);
-            }
-        }
-        else if (status == 2){
-            cm.dispose();
-            if (cm.haveItem(5152001) == true){
-                cm.gainItem(5152001, -1);
-                cm.setFace(facenew[selection]);
-                cm.sendOk("Enjoy your new and improved face!");
-            } else
-                cm.sendOk("Hmm ... it looks like you don't have the coupon specifically for this place. Sorry to say this, but without the coupon, there's no plastic surgery for you...");
-        }
-    }
+function action(m,t,s){
+	
+	if(status == -1){
+		cm.sendNext("Welcome to the Sandbox Ioc Vendor! Please click 'Next' in-order to tryout our IoCs!");		
+		status++;
+	}
+	else{
+         if(m < 1)
+		 {
+			 cm.dispose();
+		 }	
+   else{		 
+	 if(status == 0){
+		var talk = "Pick out of the following items! \r\n";	
+            
+	  
+	  talk+= " \r\n\r\n \t\t\t\t\t\t\t\t\t #eTier 1 - 10EP Each \r\n";
+		for(var i=0; i < tier1.length;i++)			
+			talk+= "#L"+i+"##i"+tier1[i]+"#";		
+		talk+= "#l \r\n\r\n \t\t\t\t\t\t\t\t\t  Tier 2 - 15EP Each \r\n";
+		
+		
+		for(var j=0; j< tier2.length;j++){
+			counter = i + j;
+			talk+= "#L"+counter+"##i"+tier2[j]+"#";
+		}
+        talk+= "#l \r\n\r\n \t\t\t\t\t\t\t\t\t  Tier 3 - 20EP Each \r\n";	
+	
+		
+		for(var k=0; k< tier3.length;k++){
+			counter = i + j + k;
+			talk+= "#L"+counter+"##i"+tier3[k]+"#";
+		}			
+	
+		
+	  cm.sendSimple(talk);
+		status++;
+		
+	}
+	else if(status == 1){
+      if(cm.getClient().getPlayer().getMap().getId() == 180000001){		
+	 /*   cm.sendOk("Heres your selection +" + s);
+		cm.dispose(); */		
+		if(s < tier1.length){
+		cm.gainSandboxitem(tier1[s]);		
+		//cm.gainItem(tier1[s]);
+		cm.showItemsgained(tier1[s],1);		
+		cm.dispose();		
+			
+		}
+		else if(s > tier1.length -1 && s < tier1.length + tier2.length ){
+		cm.gainSandboxitem(tier2[s-tier1.length]);		
+		//cm.gainItem(tier2[s-tier1.length]);
+		cm.showItemsgained(tier2[s-tier1.length],1);	
+		cm.dispose();
+			}
+		else if(s > tier1.length + tier2.length - 1 && s < tier1.length + tier2.length + tier3.length){
+		//cm.gainItem(tier3[s-(tier1.length + tier2.length)]);
+		cm.gainSandboxitem(tier3[s-(tier1.length + tier2.length)]);
+		cm.showItemsgained(tier3[s-(tier1.length + tier2.length)],1);	
+		cm.dispose();
+			}		
+		else{
+			cm.sendOk("You don't have enough ep!");
+			cm.dispose();
+		}
+	  }
+     else{
+		cm.sendOk("You're not located in the desginated map! Therefore, you will not be allowed to tryout our IoCs!");
+			cm.dispose(); 
+	 }		 
+	}
+		}
+	
+	}
 }

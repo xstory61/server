@@ -1,79 +1,129 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc> 
-                       Matthias Butz <matze@odinms.de>
-                       Jan Christian Meyer <vimes@odinms.de>
+var status = 0;
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation. You may not use, modify
-    or distribute this program under any other version of the
-    GNU Affero General Public License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Thief Job Instructor
-	Thief 2nd Job Advancement
-	Victoria Road : Construction Site North of Kerning City (102040000)
-*/
-
-var status;
- 
 function start() {
-        status = -1;
-        action(1, 0, 0);
+    status = -1;
+    action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-        if (mode == -1) {
-                cm.dispose();
-        } else {
-                if (mode == 0 && type > 0) {
-                        cm.dispose();
-                        return;
-                }
-                if (mode == 1)
-                        status++;
-                else
-                        status--;
-    
-                if(status == 0) {
-                        if (cm.isQuestCompleted(100010)) {
-                            cm.sendOk("You're truly a hero!");
-                            cm.dispose();
-                        } else if(cm.isQuestCompleted(100009)) {
-                            cm.sendNext("Alright I'll let you in! Defeat the monsters inside, collect 30 Dark Marbles, then strike up a conversation with a colleague of mine inside. He'll give you #bThe Proof of a Hero#k, the proof that you've passed the test. Best of luck to you.");
-                            status = 3;
-                        } else if (cm.isQuestStarted(100009)) {
-                            cm.sendNext("Oh, isn't this a letter from the #bDark Lord#k?");
-                        } else {
-                            cm.sendOk("I can show you the way once your ready for it.");
-                            cm.dispose();
-                        }
-                }
-                
-                else if(status == 1)
-                    cm.sendNextPrev("So you want to prove your skills? Very well...");
-                else if (status == 2)
-                    cm.sendAcceptDecline("I will give you a chance if you're ready.");
-                else if (status == 3) {
-                    cm.sendOk("You will have to collect me #b30 #t4031013##k. Good luck.");
-                    cm.completeQuest(100009);
-                    cm.startQuest(100010);
-                    cm.gainItem(4031011, -1);
-                } else if (status == 4) {
-                    cm.warp(108000400, 0);
-                    cm.dispose();
-                }
-                else {
-                    cm.dispose();
-                }
+    if (mode == -1) {
+        cm.dispose();
+    }else if (mode == 0){
+        cm.dispose();
+		return;		
+    } else {
+        if (mode == 1)
+            status++;
+        else
+            status--;
+        if (status == 0) {
+            cm.sendNext("Welcome to the Jump Quest NPC");
+		} else if (status == 1) {
+			cm.sendSimple("Which Jump Quest would you be interested in doing?\r\n Any Jump Quest with a * next to it means there are currently no rewards for it yet." +
+			"\r\n#L0# Ghost Chimney" +
+			"\r\n#L1# Pet-Walking Road" +
+			"\r\n#L2# Ludibrium Pet Walkway" +
+			"\r\n#L3# Witch Tower 1st Floor" +
+			"\r\n#L4# MapleStory Physical Fitness Challenge<Level 1>" +
+			"\r\n#L8# **Rescue Gaga!" +
+			"\r\n#L9# Breath of Lava<Level 1>" +
+			"\r\n#L11# *B1<Area 1>" +
+			"\r\n#L13# *B2<Area 1>" +
+			"\r\n#L15# *B3<Area 1>" +
+			"\r\n#L18# *The Forest of Patience<Step 1>" +
+			"\r\n#L19# *The Forest of Patience<Step 2>" +
+			"\r\n#L20# *The Forest of Patience<Step 3>" +
+			"\r\n#L21# *The Forest of Patience<Step 4>" +
+			"\r\n#L22# *The Forest of Patience<Step 5>" +
+			"\r\n#L23# *The Deep Forest of Patience<Step 1>" +
+			"\r\n#L24# *The Deep Forest of Patience<Step 2>" +
+			"\r\n#L25# *The Deep Forest of Patience<Step 3>" +
+			"\r\n#L26# *The Deep Forest of Patience<Step 4>" +
+			"\r\n#L27# *The Deep Forest of Patience<Step 5>" +
+			"\r\n#L28# *The Deep Forest of Patience<Step 6>" +
+			"\r\n#L29# *The Deep Forest of Patience<Step 7>" +
+			"\r\n#L30# *Toy Factory <Sector4> ");
+		} else if (selection == 0) {
+			cm.warp(682000200);
+			cm.getPlayer().ChimneyTimer();
+			cm.dispose();		
+		} else if (selection == 1) {
+			cm.warp(100000202);
+			cm.getPlayer().HenLudiTimer();
+			cm.dispose();
+		} else if (selection == 2) {
+			cm.warp(220000006);
+			cm.getPlayer().HenLudiTimer();
+			cm.dispose();
+		} else if (selection == 3) {
+			cm.warp(980044000);
+			cm.getPlayer().CookieTimer();
+			cm.dispose();
+		} else if (selection == 4) {
+			cm.warp(109040001);
+			cm.getPlayer().Fit1Timer();
+			cm.getPlayer().Fit2Timer();
+			cm.getPlayer().Fit3Timer();
+			cm.getPlayer().Fit4Timer();
+			cm.dispose();
+		} else if (selection == 8) {
+			cm.warp(922240000);
+			cm.getPlayer().GagaTimer();
+			cm.dispose();
+		} else if (selection == 9) {
+			cm.warp(280020000);
+			cm.getPlayer().Zak1Timer();
+			cm.getPlayer().Zak2Timer();
+			cm.dispose();
+		} else if (selection == 11) {
+			cm.warp(103000900);
+			cm.dispose();
+		} else if (selection == 13) {
+			cm.warp(103000903);
+			cm.dispose();
+		} else if (selection == 15) {
+			cm.warp(103000906);
+			cm.dispose();
+		} else if (selection == 18) {
+			cm.warp(101000100);
+			cm.dispose();
+		} else if (selection == 19) {
+			cm.warp(101000101);
+			cm.dispose();
+		} else if (selection == 20) {
+			cm.warp(101000102);
+			cm.dispose();
+		} else if (selection == 21) {
+			cm.warp(101000103);
+			cm.dispose();
+		} else if (selection == 22) {
+			cm.warp(101000104);
+			cm.dispose();
+		} else if (selection == 23) {
+			cm.warp(105040310);
+			cm.dispose();
+		} else if (selection == 24) {
+			cm.warp(105040311);
+			cm.dispose();
+		} else if (selection == 25) {
+			cm.warp(105040312);
+			cm.dispose();
+		} else if (selection == 26) {
+			cm.warp(105040313);
+			cm.dispose();
+		} else if (selection == 27) {
+			cm.warp(105040314);
+			cm.dispose();
+		} else if (selection == 28) {
+			cm.warp(105040315);
+			cm.dispose();
+		} else if (selection == 29) {
+			cm.warp(105040316);
+			cm.dispose();	
+		} else if (selection == 30) {
+			cm.warp(922000000);
+			cm.dispose();
+			
         }
-}
+    }
+}  

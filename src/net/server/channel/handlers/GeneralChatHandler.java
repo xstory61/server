@@ -28,7 +28,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.autoban.AutobanFactory;
 import client.command.CommandProcessor;
-import client.command.Commands;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import server.events.TriviaEvents;
