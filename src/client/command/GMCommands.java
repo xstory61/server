@@ -1569,67 +1569,54 @@ public class GMCommands {
                     break;
                     
                 case "warp":
-                        if (sub.length < 2){
-				player.yellowMessage("Syntax: !warp <mapid>");
-				break;
-			}
+                    if (sub.length < 2){
+                    	player.yellowMessage("Syntax: !warp <mapid>");
+                    	return false;
+                    }
                     
-			try {
-				MapleMap target = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(sub[1]));
-				if (target == null) {
-					player.yellowMessage("Map ID " + sub[1] + " is invalid.");
-					break;
-				}
-				if (player.getEventInstance() != null) {
-					player.getEventInstance().leftParty(player);
-				}
-				player.changeMap(target, target.getRandomPlayerSpawnpoint());
-			} catch (Exception ex) {
-				player.yellowMessage("Map ID " + sub[1] + " is invalid.");
-				break;
-			}
-                    break;
-                    
-                case "warpto":
-                        if (sub.length < 3){
-				player.yellowMessage("Syntax: !warpto <playername> <mapid>");
-				break;
-			}
-                    
-			victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
-			if (victim == null) {//If victim isn't on current channel or isnt a character try and find him by loop all channels on current world.
-				for (Channel ch : srv.getChannelsFromWorld(c.getWorld())) {
-					victim = ch.getPlayerStorage().getCharacterByName(sub[1]);
-					if (victim != null) {
-						break;//We found the person, no need to continue the loop.
+					try {
+						/*
+						MapleMap target = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(sub[1]));
+						if(target == null) {
+							victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
+							if(victim == null) {
+								player.yellowMessage("Invalid input.");
+								return false;
+							}
+							if (player.getClient().getChannel() != victim.getClient().getChannel()) {//And then change channel if needed.
+								player.dropMessage("Changing channel, please wait a moment.");
+								player.getClient().changeChannel(victim.getClient().getChannel());
+							}
+							target = victim.getMap();
+						}
+						if (player.getEventInstance() != null) {
+							player.getEventInstance().unregisterPlayer(player);
+						}
+						
+						player.changeMap(target, target.getRandomPlayerSpawnpoint());
+						*/
+						victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
+						if(victim != null) {
+							if (player.getClient().getChannel() != victim.getClient().getChannel()) {//Change channel if needed.
+								player.dropMessage("Changing channel, please wait a moment.");
+								player.getClient().changeChannel(victim.getClient().getChannel());
+							}
+							player.changeMap(victim.getMap(), victim.getPosition());
+						} else {
+							MapleMap target = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(sub[1]));
+							player.changeMap(target, target.getRandomPlayerSpawnpoint());
+						}
+						if (player.getEventInstance() != null) {
+							player.getEventInstance().unregisterPlayer(player);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						player.dropMessage("A problem occured");
+						return false;
 					}
-				}
-			}
-			if (victim != null) {//If target isn't null attempt to warp.
-				//Remove warper from current event instance.
-				if (player.getEventInstance() != null) {
-					player.getEventInstance().unregisterPlayer(player);
-				}
-				//Attempt to join the victims warp instance.
-				if (victim.getEventInstance() != null) {
-					if (victim.getClient().getChannel() == player.getClient().getChannel()) {//just in case.. you never know...
-						//victim.getEventInstance().registerPlayer(player);
-						player.changeMap(victim.getEventInstance().getMapInstance(victim.getMapId()), victim.getMap().findClosestPortal(victim.getPosition()));
-					} else {
-						player.dropMessage("Please change to channel " + victim.getClient().getChannel());
-					}
-				} else {//If victim isn't in an event instance, just warp them.
-					player.changeMap(victim.getMapId(), victim.getMap().findClosestPortal(victim.getPosition()));
-				}
-				if (player.getClient().getChannel() != victim.getClient().getChannel()) {//And then change channel if needed.
-					player.dropMessage("Changing channel, please wait a moment.");
-					player.getClient().changeChannel(victim.getClient().getChannel());
-				}
-			} else {
-				player.dropMessage("Unknown player.");
-			}
-                    break;
-                    
+		        break;
+		                  
+		                    
                 case "warphere":
                 case "summon":
                         if (sub.length < 2){

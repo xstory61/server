@@ -37,7 +37,7 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
         public final void handlePacket(SeekableLittleEndianAccessor slea, MapleClient c) {
                 String s = slea.readMapleAsciiString();
                 MapleCharacter chr = c.getPlayer(); 
-                TriviaEvents te = chr.getMap().getTriviaEvents();
+                TriviaEvents te = chr.getMap().getTriviaEvents(); 
                
                 if (CommandProcessor.isCommand(s, chr)) {                    
                      CommandProcessor.executeCommand(c, s);                    
@@ -54,60 +54,62 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                         } else {
                                 chr.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(chr.getId(), s, chr.getWhiteChat(), show));
                         }
-                        if(te.isActive()) {
-                         switch(te.getEvent()) {
-                        default:
-                            System.out.println("Invalid game type.");
-                            break;
-                        case 1:
-                            if(s.equals(te.getResult())) {
-                             te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Hitman] " + chr.getName() + " has gotten the hitman correctly!"));
-                            }
-                            break;
-                        case 2:
-                            if(s.equals(te.getResult())) {
-                               te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Blink] " + chr.getName() + " has gotten the blink correctly!"));
-                            }
-                            break;
-                        case 3:
-                            if(s.equals(te.getResult())) {
-                                te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Unscramble] " + chr.getName() + " has gotten the unscramble correctly!"));
-                            }
-                            break;
-                        case 4:
-                            if(s.equals(te.getResult())) {
-                                 te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Reverse] " + chr.getName() + " has gotten the reverse text correctly!"));
-                            }
-                            break;
-                        case 5:
-                            if(s.equals(te.getResult())) {
-                                  te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[SpeedType] " + chr.getName() + " has gotten the speedtype text correctly!"));
-                            }
-                            break;
-                        case 6:
-                            if(s.toLowerCase().equals(te.getResult())) {
-                                 te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Scategories] " + chr.getName() + " has gotten it correctly!"));
-                            }
-                            break;
-                        case 7:
-                            if(s.equals(te.getResult())) {
-                                  te.setActive(false);  
-                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[NTI] " + chr.getName() + " has gotten the item correctly!"));
-                               chr.getMap().clearDrops();
-                            }
-                            break;
-                            
-                    }
-
-                     
+                        if(te != null) {
+	                        if(te.isActive()) {
+	                         switch(te.getEvent()) {
+	                        default:
+	                            System.out.println("Invalid game type.");
+	                            break;
+	                        case 1:
+	                            if(s.equals(te.getResult())) {
+	                             te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Hitman] " + chr.getName() + " has gotten the hitman correctly!"));
+	                            }
+	                            break;
+	                        case 2:
+	                            if(s.equals(te.getResult())) {
+	                               te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Blink] " + chr.getName() + " has gotten the blink correctly!"));
+	                            }
+	                            break;
+	                        case 3:
+	                            if(s.equals(te.getResult())) {
+	                                te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Unscramble] " + chr.getName() + " has gotten the unscramble correctly!"));
+	                            }
+	                            break;
+	                        case 4:
+	                            if(s.equals(te.getResult())) {
+	                                 te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Reverse] " + chr.getName() + " has gotten the reverse text correctly!"));
+	                            }
+	                            break;
+	                        case 5:
+	                            if(s.equals(te.getResult())) {
+	                                  te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[SpeedType] " + chr.getName() + " has gotten the speedtype text correctly!"));
+	                            }
+	                            break;
+	                        case 6:
+	                            if(s.toLowerCase().equals(te.getResult())) {
+	                                 te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Scategories] " + chr.getName() + " has gotten it correctly!"));
+	                            }
+	                            break;
+	                        case 7:
+	                            if(s.equals(te.getResult())) {
+	                                  te.setActive(false);  
+	                                chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[NTI] " + chr.getName() + " has gotten the item correctly!"));
+	                               chr.getMap().clearDrops();
+	                            }
+	                            break;
+	                            
+	                    }
+	
+	                     
+	                }
                 }
-        }
+            }
      }
 }
 

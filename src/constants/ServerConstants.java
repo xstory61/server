@@ -31,7 +31,7 @@ public class ServerConstants {
     public static boolean SHUTDOWNHOOK;
 	
     //Gameplay Configuration
-    public static final boolean USE_CUSTOM_KEYSET = true;           //Enables auto-setup of the MapleSolaxiaV2's custom keybindings when creating characters.
+    public static final boolean USE_CUSTOM_KEYSET = false;           //Enables auto-setup of the MapleSolaxiaV2's custom keybindings when creating characters.
     public static final boolean USE_MAXRANGE_ECHO_OF_HERO = true;
     public static final boolean USE_MAXRANGE = true;                //Will send and receive packets from all events of a map, rather than those of only view range.
     public static final boolean USE_DEBUG = false;                  //Will enable some text prints on the client, oriented for debugging purposes.
