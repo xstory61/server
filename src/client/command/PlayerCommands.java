@@ -9,7 +9,9 @@ import client.MapleClient;
 import client.MapleStat;
 import client.Skill;
 import client.SkillFactory;
+import client.inventory.MapleInventoryType;
 import constants.GameConstants;
+import constants.ServerConstants;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +27,7 @@ import net.server.channel.Channel;
 import provider.MapleData;
 import provider.MapleDataProviderFactory;
 import scripting.npc.NPCScriptManager;
+import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.events.gm.MapleEvent;
 import server.gachapon.MapleGachapon;
@@ -289,7 +292,106 @@ public class PlayerCommands {
 			int days    = (int) ((milliseconds / (1000*60*60*24)));
  			player.yellowMessage("Server has been online for " + days + " days " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
 			break;
-                    
+                  case "emo":
+                player.setHp(0);
+                player.updateSingleStat(MapleStat.HP, 0);
+                break;
+            case "dropinv":
+                for (int i = 0; i < player.getInventory(MapleInventoryType.EQUIP).getSlotLimit() + 1; i++) {
+                    MapleInventoryManipulator.drop(c, MapleInventoryType.EQUIP, (short) i, (short) 1);
+                }
+                break;
+            case "randlook":
+                for (int i = -24; i < 0; i++) {
+                    if (i != -11) {
+                        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((short) i) != null) {
+                            MapleInventoryManipulator.unequip(c, (short) i, player.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                        }
+                    }
+                }
+                short[] slots = {-9, -7, -2, -1, -49, -13, -5, -6, -8};
+                int[] types = {110, 107, 101, 100, 114, 111, 104, 106, 108};
+                short chosenrand = 666;
+
+                for (int i = 0; i < slots.length; i++) {
+                    chosenrand = player.getRandomslottype(types[i], player);
+                    if (chosenrand != 666) {
+                        MapleInventoryManipulator.equip(c, chosenrand, slots[i]);
+                    }
+                }
+                break; 
+                case "s":
+            case "smega":
+            /*    if (sub.length > 1) {
+                    if (!c.isJailed(c) && !player.isMuted() && !player.isPermmute()) {
+                        if ((player.getSmegacd() > player.getSmegadelay() * 1000) || (c.getWorldServer().isPlayerTrivia() && player.getTcounter() != 3) || (ServerConstants.isautotriv && player.getTcounter() != 3)) {
+                            String text = StringUtil.joinStringFrom(sub, 1);
+                            if (player.getInventory(MapleInventoryType.CASH).findById(5072000) != null || c.getWorldServer().isPlayerTrivia() || player.infiniteSmega()) {
+                                if (!player.getSmegaPrefix().equals("0")) {
+                                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + text, true));
+                                } else {
+                                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + text, true));
+                                }
+                                String gender = "";
+                                if(c.getWorldServer().isPlayerTrivia() || ServerConstants.isautotriv){
+                                    if(player.getGender() == 0)
+                                        gender = "He";
+                                    else if(player.getGender() == 1)
+                                        gender = "She";
+                                    else
+                                        gender = "It";
+                                }
+                                if (c.getWorldServer().isPlayerTrivia()) {
+                                    if (text.toLowerCase().equals(ServerConstants.playertriviaAnswer) && !player.getName().equals(ServerConstants.playertriviaGuy)) {
+                                        Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Answer] " + player.getName() + " has written down the correct answer which was '" + ServerConstants.playertriviaAnswer + "'. " + gender + " has won 1 Participation Point."));
+                                        player.gainParticipationPoints(1);
+                                        ServerConstants.playertriviaAnswer = "";
+                                        ServerConstants.playertriviaGuy = "";
+                                        c.getWorldServer().setPlayerTrivia(false);
+                                    }
+                                    if (player.getTcounter() == 3) {
+                                        player.setTcounter(0);
+                                    }
+                                    player.setTcounter(player.getTcounter() + 1);
+                                }
+                                
+                                if(ServerConstants.isautotriv){
+                                    if(text.toLowerCase().equals(ServerConstants.autotrivans.toLowerCase())){
+                                        Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Answer] " + player.getName() + " has written down the correct answer which was '" + ServerConstants.autotrivans + "'. " + gender + " has won 1 Participation Point."));
+                                        player.gainParticipationPoints(1);
+                                        ServerConstants.isautotriv = false;
+                                    }
+                                     if (player.getTcounter() == 3) {
+                                        player.setTcounter(0);
+                                    }
+                                    player.setTcounter(player.getTcounter() + 1);
+                                }
+                                
+                                if (!player.infiniteSmega()) {
+                                    MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5072000, (short) 1, false, true);
+                                }
+
+                                player.setSmegacd(System.currentTimeMillis());
+                            } else {
+                                player.dropMessage(5, "You don't have any smega. ");
+                            }
+                        } else {
+                            player.dropMessage(6, "Please wait " + player.getSmegadelay() + " seconds between each message.");
+                        }
+                    } else {
+                        player.dropMessage(5, "You're not allowed to smega.");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Please type out a message.");
+                } */
+                if(player.getInventory(MapleInventoryType.CASH).findById(5072000) != null){
+                    String text = StringUtil.joinStringFrom(sub, 1);
+                      Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + text, true));
+                     MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5072000, (short) 1, false, true);  
+                }
+                else
+                    player.dropMessage(5,"You have no smega!");
+                break;  
 		case "gacha":
 			MapleGachapon.Gachapon gacha = null;
 			String search = StringUtil.joinStringFrom(sub, 1);
@@ -318,7 +420,71 @@ public class PlayerCommands {
 			output += "\r\nPlease keep in mind that there are items that are in all gachapons and are not listed here.";
 			c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
 			break;
-                
+                 case "job":
+                NPCScriptManager.getInstance().start(c, 2012022, null, null);
+                break;
+            case "shop":
+            case "a":
+                NPCScriptManager.getInstance().start(c, 1092019, null, null);
+                break;
+            case "sprefix":
+                NPCScriptManager.getInstance().start(c, 9201052, null, null);
+                break;
+            case "infinity":
+            case "aio":
+            case "all":
+                NPCScriptManager.getInstance().start(c, 2141013, null, null);
+                break;
+            case "ioc":
+            case "bigbad":
+                NPCScriptManager.getInstance().start(c, 9000053, null, null);
+                break;
+            case "spinel":
+                NPCScriptManager.getInstance().start(c, 9000020, null, null);
+                break;
+            case "minigames":
+                NPCScriptManager.getInstance().start(c, 1012008, null, null);
+                break;
+            case "styler":
+            case "kin":
+            case "nimakin":
+            case "style":
+                /* 
+                      if(player.isMale()) {
+            NPCScriptManager.getInstance().start(c, 9900000, null, null);
+                      }
+                    else  {
+            NPCScriptManager.getInstance().start(c, 9900001, null, null);
+                      } */
+                NPCScriptManager.getInstance().start(c, 1530041, null, null);
+                break;
+            case "vp":
+                 NPCScriptManager.getInstance().start(c, 2084001, null, null);
+                break;
+            case "fp":
+               NPCScriptManager.getInstance().start(c, 2141009, null, null);
+                break; 
+            case "jq":
+                NPCScriptManager.getInstance().start(c, 1095000, null, null);
+                break;
+
+            case "fm":
+                if (sub.length > 1) {
+                    if (Integer.parseInt(sub[1]) >= 1 && Integer.parseInt(sub[1]) <= 22) {
+                        player.changeMap(910000000 + Integer.parseInt(sub[1]));
+                    } else {
+                        player.dropMessage("Invalid FM Room");
+                    }
+                } else {
+                    player.changeMap(910000000);
+                }
+                break;
+
+            case "expfix":
+                player.setExp(0);
+                player.updateSingleStat(MapleStat.EXP, 0);
+                ;
+                break; 
                 case "maxskills":  
                      for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
                     try {

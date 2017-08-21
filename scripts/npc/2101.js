@@ -1,42 +1,46 @@
 /*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
+Scripted by Yz, AAFS's DEVTeam. 2010-2011. All right reserved.
+--------------------------------------------------------------
+Feel free to re-distribute my work, but remember to give the proper credits. 
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Credit to Shawn in Rz
 */
-var status = -1;
+
+importPackage(Packages.client);
+
+var status = 0;
+var chosenItem;
+var selected = 1;
+var selectedType = -1;
+var selectedItem = -1;
+var choice;
+status = -1;
 
 function start() {
-    cm.sendYesNo("Are you done with your training? If you wish, I will send you out from this training camp.");
+    cm.sendSimple("Hey #b#h ##k. I'm #rInventory Cleaner#k. Well, do you think you need some #bcleaning#k? If yes, I will give u a small #rwarning#k. Once click, your item will be deleted. We won't #rrefund#k your item! So, choose wisely! \r\n#L0#Equip Cleaner#l \r\n#L1#Cash Cleaner#l");
 }
-
-function action(mode, type, selection) {
-    status++;
-    if (mode != 1){
-        if(mode == 0)
-            cm.sendOk("Haven't you finished the training program yet? If you want to leave this place, please do not hesitate to tell me.");
+function action(mode, type, selection){
+    if (mode != 1) {
         cm.dispose();
         return;
+    }else{
+        status++;
     }
-    if (status == 0)
-        cm.sendNext("Then, I will send you out from here. Good job.");
-    else{
-        cm.warp(40000);
-        cm.dispose();
+    if (status == 0){
+        choice = selection;
+        if (choice == 0){
+            cm.sendSimple("Well, choose wisely! We won't refund your #rEquip#k if you selected wrong! \r\n\r\n"+cm.EquipList(cm.getClient()));
+        }else if (choice == 1){
+            cm.sendSimple("PWell, choose wisely! We won't refund your #rCash#k if you selected wrong!  \r\n\r\n"+cm.CashList(cm.getClient()));
+        }
+    }else if (status == 1){
+        /*     not fully sure, but this should work for both since 
+            selection will start at 0 regardless of which you chose */
+      	selectedType = selection;
+		var type = [MapleInventoryType.EQUIP,MapleInventoryType.CASH];
+            chosenItem = cm.getPlayer().getInventory(type[choice]).getItem(selection).getItemId();
+            cm.gainItem(chosenItem, -1);
+            cm.sendOk("Thank you for your garbage!");
+            cm.dispose();
     }
 }

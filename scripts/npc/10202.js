@@ -19,25 +19,36 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-var status = -1;
+importPackage(Packages.server.minigames);
+importPackage(Packages.server.minigames.solo);
+var status = 0;
 
 function start() {
-    cm.sendNext("Warriors possess an enormous power with stamina to back it up, and they shine the brightest in melee combat situation. Regular attacks are powerful to begin with, and armed with complex skills, the job is perfect for explosive attacks.");
+	action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-    status++;
-    if (mode != 1){
-        if(mode == 0)
-           cm.sendNext("If you wish to experience what it's like to be a Warrior, come see me again.");
-        cm.dispose();
-        return;
-    }
-    if (status == 0) {
-        cm.sendYesNo("Would you like to experience what it's like to be a Warrior?");
-    } else if (status == 1){
-	cm.lockUI();
-        cm.warp(1020100, 0);
-	cm.dispose();
-    }
+	if(mode < 1) {
+		cm.dispose();
+		return;
+	} else {
+		status++;
+	}
+	if(status == 1) {
+		cm.sendSimple("Select Game \r\n#L0#Game#l");
+	} else if (status == 2) {
+		if(cm.getPlayer().getName().equals("danny")) {
+			//cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 910010300, "pandajump"));
+			//cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "hitman"));
+			//cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "unscramble"));
+			//cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 302000000, "speedtype"));
+			cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 103000008, "nti"));
+			cm.getPlayer().getGameManager().createInstancedMap();
+			cm.getPlayer().getGameManager().startGame(NameTheItem.class, false);
+			cm.dispose();
+		} else {
+			cm.sendOk("Only danny can access this");
+			cm.dispose();
+		}
+	}
 }

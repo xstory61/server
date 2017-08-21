@@ -19,55 +19,127 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*Amos the Strong - Entrance
-**9201043
-**@author Jvlaple
-*/
+/*
+ * @Name: Spinel
+ * @NPC ID: 9000020
+ * @Author: Alcandon
+ */
 
-var status = 0;
-var MySelection = -1;
+var status = -1;
+var possibleJobs = new Array();
+var maps = [
+/*BossMaps*/[100000005, 105070002, 105090900, 230040420, 280030000, 220080000, 240020402, 240020101, 801040100, 610010005, 610010012, 610010013, 610010100, 610010101, 610010102, 610010103, 610010104, 541010100, 610030600, 270050100, 551030200],
+/*MonsterMaps*/[100040001, 101010100, 104040000, 103000101, 103000105, 101030110, 106000002, 101030103, 101040001, 101040003, 101030001, 104010001, 105070001, 105090300, 105040306, 230020000, 230010400, 211041400, 222010000, 220080000, 220070301, 220070201, 220050300, 220010500, 250020000, 251010000, 200040000, 200010301, 240020100, 240040500, 240040000, 600020300, 801040004, 800020130, 800020400, 541000300, 240040800, 240040900, 610030010, 270000100, 240070010, 240070010, 240070020, 240070030, 240070040, 240070050, 240070060, 240070100, 240070101, 240070102, 240070103, 240070200, 240070201, 240070202, 240070203, 240070300, 240070301, 240070302, 240070303, 240070400, 240070401, 240070402, 240070403, 240070500, 240070501, 240070502, 240070503, 240070600, 240070601, 240070602, 240070603, 682010201, 682010202, 682010203, 551030100],
+/*Towns*/[130000000, 300000000, 1010000, 680000000, 230000000, 101000000, 211000000, 100000000, 251000000, 103000000, 222000000, 104000000, 240000000, 220000000, 250000000, 800000000, 600000000, 221000000, 200000000, 102000000, 801000000, 105040300, 610010004, 260000000, 540010000, 120000000, 550000000, 200090500, 240070000]];
+var jobA = false;
+var warper = false;
+var job;
+var newJob;
+var chosenMap = -1;
+var chosenSection = -1;
 
 function start() {
-    cm.sendSimple("My name is Amos the Strong. What would you like to do?\r\n#b#L0#Enter the Amorian Challenge!!#l\r\n#L1#Trade 10 Keys for a Ticket!#l\r\n#k");
+    cm.sendSimple("#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L1#Job Advance#l");
 }
 
 function action(mode, type, selection) {
-    if (mode == -1)
+    status++;
+    if(mode != 1){
         cm.dispose();
-    else {
-        if (status >= 0 && mode == 0) {
-            cm.sendOk("Ok come back when you're ready.");
-            cm.dispose();
-            return;
-        }
-        if (mode == 1) 
-            status++;
+        return;
+    }
+    if (!jobA && !warper)
+        if (selection == 1)
+            jobA = true;
         else
-            status--;
-        if (status == 1 && selection == 0) {
-            if (cm.haveItem(4031592, 1) && cm.isMarried()==1) {
-                cm.sendYesNo("So you would like to enter the #bEntrance#k?");
-                MySelection = selection;
-            } else {
-                cm.sendOk("You must have an Entrance Ticket to enter, and you have to be married.");
-                cm.dispose();
-            }
-        } else if (status == 1 && selection == 1) {
-            if (cm.haveItem(4031593, 10)) {
-                cm.sendYesNo("So you would like a Ticket?");
-                MySelection = selection;
-            } else {
-                cm.sendOk("Please get me 10 Keys first!");
-                cm.dispose();
-            }
-        } else if (status == 2 && MySelection == 0) {
-            cm.warp(670010100, 0);
-            cm.gainItem(4031592, -1)
+            warper = true;
+    if (jobA)
+        jobAdv(selection);
+    else
+        warp(selection);
+}
+
+
+function warp(selection){
+    if (status == 0)
+        cm.sendSimple("#fUI/UIWindow.img/QuestIcon/3/0#\r\n#L0#Boss Maps#l\r\n#L1#Monster Maps#l\r\n#L2#Town Maps#l");
+    else if (status == 1) {
+        chosenSection = selection;
+        var selStr = "Select your destination.#b";
+        for (var i = 0; i < maps[selection].length; i++)
+            selStr += "\r\n#L" + i + "##m" + maps[selection][i] + "#";
+        cm.sendSimple(selStr);
+    } else if (status == 2) {
+        chosenMap = selection;
+        cm.sendYesNo("Do you want to go to #m" + maps[chosenSection][selection] + "#?");
+    } else if (status == 3) {
+        cm.warp(maps[chosenSection][chosenMap]);
+        cm.dispose();
+    }
+}
+
+function jobAdv(selection){
+    if (status == 0) {
+        newJob = cm.getJobId() + 1;
+        if (cm.getJobId() % 10 == 2) {
+            cm.sendOk("Don't try to fool me young man.");
             cm.dispose();
-        } else if (status == 2 && MySelection == 1) {
-            cm.gainItem(4031593, -10);
-            cm.gainItem(4031592, 1);
-            cm.dispose();
+        } else if (cm.getJobId() % 10 >= 0 && cm.getJobId() % 100 != 0) {
+            var secondJob = cm.getJobId() % 10 == 0;
+            if ((secondJob && cm.getLevel() < 70) || (!secondJob && cm.getLevel() < 120)) {
+                cm.sendOk("Hey, Don't try to fool me Young man.");
+                cm.dispose();
+            } else
+                cm.sendYesNo("Great job getting to level " + cm.getLevel() + ". Would you like to become a #b"+cm.getJobName(newJob)+"#k ?");
+        } else {
+            if (cm.getJobId() % 1000 == 0) {
+                if (cm.getLevel() >= 10) 
+                    for (var i = 1; i < 6; i++) 
+                        possibleJobs.push(cm.getJobId() + 100 * i);
+                else if (cm.getLevel() >= 8)
+                    possibleJobs.push(cm.getJobId() + 200);
+            } else if (cm.getLevel() >= 30) {
+                switch (cm.getJobId()) {
+                    case 100:
+                    case 200:
+                        possibleJobs.push(cm.getJobId() + 30);
+                    case 300:
+                    case 400:
+                    case 500:
+                        possibleJobs.push(cm.getJobId() + 20);
+                    case 1100:
+                    case 1200:
+                    case 1300:
+                    case 1400:
+                    case 1500:
+					case 2100:
+                        possibleJobs.push(cm.getJobId() + 10);
+                        break;
+                }
+            }
+            if (possibleJobs.length == 0) {
+                cm.sendOk("Hey, don't try to fool me young man.");
+                cm.dispose();
+            } else {
+                var text = "There are the available jobs you can take#b";
+                for (var j = 0; j < possibleJobs.length; j++)
+                    text += "\r\n#L"+j+"#"+cm.getJobName(possibleJobs[j])+"#l";
+                cm.sendSimple(text);
+            }
         }
+    } else if (status == 1 && cm.getJobId() % 100 != 0) {
+        cm.changeJobById(cm.getJobId() + 1);
+        cm.maxMastery();
+        cm.dispose();
+    } else if (status == 1) {
+        cm.changeJobById(possibleJobs[selection]);
+        if (cm.getJobId() % 10 == 0)
+        cm.dispose();
+    } else if (status == 2) {
+        job = selection;
+        cm.sendYesNo("Are you sure you want to job advance?");
+    } else if (status == 3) {
+        cm.changeJobById(possibleJobs[job]);
+        cm.dispose();
     }
 }

@@ -147,6 +147,7 @@ import constants.skills.Spearman;
 import constants.skills.SuperGM;
 import constants.skills.Swordsman;
 import constants.skills.ThunderBreaker;
+import java.util.Random;
 import scripting.item.ItemScriptManager;
 import server.maps.MapleMapItem;
 
@@ -1693,7 +1694,25 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         client.announce(MaplePacketCreator.updateBuddylist(getBuddylist().getBuddies()));
         nextPendingRequest(client);
     }
-    
+    public short getRandomslottype(int equiptype, MapleCharacter player) {
+        List<Short> itemslots = new ArrayList<>();
+        // int counter = 0;
+        for (int i = 0; i < player.getInventory(MapleInventoryType.EQUIP).getSlotLimit(); i++) {
+            if (player.getInventory(MapleInventoryType.EQUIP).getItem((short) i) != null) {
+                if (player.getInventory(MapleInventoryType.EQUIP).getItem((short) i).getItemId() / 10000 == equiptype) {
+                    itemslots.add((short) i);
+                }
+            }
+        }
+
+        Random rand = new Random();
+
+        if (itemslots.isEmpty()) {
+            return (short) 666;
+        } else {
+            return itemslots.get(rand.nextInt(itemslots.size()));
+        }
+    }
     public static boolean deleteCharFromDB(MapleCharacter player) {
             int cid = player.getId(), accId = -1, world = 0;
             

@@ -26,26 +26,10 @@ map: 922000010
 quest: 3230
 escape: 2040028
 */
-
 var status = 0;
-var em;
-
+var id = 0;
 function start() {
-    if (cm.isQuestStarted(3230)) {
-        em = cm.getEventManager("DollHouse");
-
-        if (em.getProperty("noEntry") == "false") {
-            cm.sendNext("The pendulum is hidden inside a dollhouse that looks different than the others.");
-        }
-        else {
-            cm.sendOk("Someone else is already searching the area. Please wait until the area is cleared.");
-            cm.dispose();
-        }
-    }
-    else {
-        cm.sendOk("We are not allowed to let the general public wander past this point.");
-        cm.dispose();
-    }
+    action(1,0,0);
 }
 
 function action(mode, type, selection) {
@@ -53,12 +37,25 @@ function action(mode, type, selection) {
         cm.dispose();
     else {
         status++;
-        if (status == 1) 
-            cm.sendYesNo("Are you ready to enter the dollhouse map?");
+        if (status == 1){ 		
+            cm.sendNext("MSIs are obtainable by extracting your maxed abilities into the item, would you like to do that?");
+		//	status++;
+		//	cm.dispose();
+		}
         else if (status == 2) {
-            var eim = em.newInstance("DollHouse");
-            eim.registerPlayer(cm.getPlayer());
-            cm.dispose();
-        }
+            if(cm.canMSI()){
+				if(cm.haveSpace()){
+              id = cm.makeMSI();
+			  cm.showItemsgained(id,1);
+			  cm.sendOk("Congratulations! you've gained the #i"+id+"#, MSIs are powerful items, use them wisely");
+				}
+				else
+					cm.sendOk("Please check if you have free space in your inventory before trying again.");
+			}
+		    else
+				cm.sendOk("You don't match the stats needed, 30k in each ability");
+			cm.dispose();
+
+       }
     }
-}
+}	

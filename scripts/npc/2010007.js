@@ -24,7 +24,7 @@ var status = 0;
 var sel;
 
 function start() {
-    cm.sendSimple("What would you like to do?\r\n#b#L0#Create a Guild#l\r\n#L1#Disband your Guild#l\r\n#L2#Increase your Guild's capacity#l#k");
+    cm.sendSimple("What would you like to do?\r\n#b#L0#Create a Guild#l\r\n#L1#Disband your Guild#l\r\n#L2#Increase your Guild's capacity#l\r\n#L10#Change your Guild's name#l#k");
 }
 
 function action(mode, type, selection) {
@@ -58,8 +58,16 @@ function action(mode, type, selection) {
                     cm.sendOk("You can only increase your Guild's capacity if you are the leader.");
                     cm.dispose();
                 } else
-                    cm.sendYesNo("Increasing your Guild capacity by #b5#k costs #b " + cm.getPlayer().getGuild().getIncreaseGuildCost(cm.getPlayer().getGuild().getCapacity()) +" mesos#k, are you sure you want to continue?");
-            }
+                    cm.sendYesNo("Increasing your Guild capacity by #b5#k costs #b 500000 mesos#k, are you sure you want to continue?");
+            } else if (selection == 10) {
+            	if (cm.getPlayer().getGuildId() < 1 || cm.getPlayer().getGuildRank() != 1) {
+                    cm.sendOk("You can only increase your Guild's name if you are the leader.");
+                    cm.dispose();
+                    return;
+                } else {
+                	cm.sendYesNo("Changing of Guild name costs #b120 Dark Rock Souls#k, are you sure you want to continue?");
+                }
+            } 
         } else if (status == 2) {
             if (sel == 0 && cm.getPlayer().getGuildId() <= 0) {
                 cm.getPlayer().genericGuildMessage(1);
@@ -71,8 +79,23 @@ function action(mode, type, selection) {
                 } else if (sel == 2) {
                     cm.getPlayer().increaseGuildCapacity();
                     cm.dispose();
-                }
+                } else if (sel == 10) {
+					cm.sendGetText("What would you like to change your Guild's name to?\r\n#b<Make sure the name is within 1 to 20 characters>"); 
+				}
             }
+        } else if (status == 3) {
+        	if (sel == 10) {
+				if (cm.haveItem(4031466, 120)) {
+					if (Packages.net.server.guild.MapleGuild.isGuildNameChangeAcceptable(cm.getText())) {
+						cm.gainItem(4031466, -120);
+						cm.getPlayer().getGuild().changeName(cm.getText());
+						cm.sendOk("Your Guild's name has been successfully changed to " + cm.getText());
+					} else
+						cm.sendOk("Invalid guild name! Either the guild name is in use or the name is not within 1 to 20 characters!"); 
+				} else
+					cm.sendOk("You need 120 Dark Soul Rocks to change your guild name."); 
+			}
+        	cm.dispose();
         }
     }
 }

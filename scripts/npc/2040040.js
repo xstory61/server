@@ -1,93 +1,69 @@
-/*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-		       Matthias Butz <matze@odinms.de>
-		       Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
-@	Author : Raz
-@       Author : Ronan
-@
-@	NPC = Green Balloon
-@	Map = Hidden-Street <Stage 5>
-@	NPC MapId = 922010500
-@	Function = LPQ - 5th Stage
-@
- */
-
+importPackage(Packages.server.minigames);
+importPackage(Packages.server.minigames.solo);
+importPackage(Packages.server.minigames.pvp);
 var status = 0;
-var curMap, stage;
+var sel = 0;
 
 function start() {
-    curMap = cm.getMapId();
-    stage = Math.floor((curMap - 922010100) / 100) + 1;
-    
-    status = -1;
-    action(1, 0, 0);
-}
-
-function clearStage(stage, eim, curMap) {
-    eim.setProperty(stage + "stageclear", "true");
-    eim.showClearEffect(true);
-    
-    eim.linkToNextStage(stage, "lpq", curMap);  //opens the portal to the next map
+	action(1, 0, 0);
 }
 
 function action(mode, type, selection) {
-            if (mode == -1) {
-            cm.dispose();
-        } else if (mode == 0){
-            cm.dispose();
-        } else {
-                if (mode == 1)
-                        status++;
-                else
-                        status--;
-                    
-                var eim = cm.getPlayer().getEventInstance();
-                
-                if(eim.getProperty(stage.toString() + "stageclear") != null) {
-                        cm.sendNext("Hurry, goto the next stage, the portal is open!");
-                }
-                else {
-                        if (eim.isEventLeader(cm.getPlayer())) {
-                                var state = eim.getIntProperty("statusStg" + stage);
-
-                                if(state == -1) {           // preamble
-                                        cm.sendOk("Hi. Welcome to the #bstage " + stage + "#k. This is the 2nd stage, but everyone has to cooperate. There are 6 portals here. One is guarded by undefeatable monsters, and one is very high. I'd like you and your party to go in each one and break the boxes inside. Bring back the drops -- there should be 24.");
-                                        eim.setProperty("statusStg" + stage, 0);
-                                }
-                                else {       // check stage completion
-                                        if (cm.haveItem(4001022, 24)) {
-                                                cm.sendOk("Good job! You have collected all 24 #b#t4001022#'s.#k");
-                                                cm.gainItem(4001022, -24);
-
-                                                eim.setProperty("statusStg" + stage, 1);
-                                                clearStage(stage, eim, curMap);
-                                        } else {
-                                                cm.sendNext("Sorry you don't have all 24 #b#t4001022#'s.#k");
-                                        }
-                                }
-                        } else {
-                                cm.sendNext("Please tell your #bParty-Leader#k to come talk to me.");
-                        }
-                }
-                
-                cm.dispose();
-        }
+	if(mode < 1) {
+		cm.dispose();
+		return;
+	} else {
+		status++;
+	}
+	if(status == 1) {
+		if(cm.getPlayer().getMapId() != 101000004) {
+			cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "unscramble"));
+			var score = cm.getPlayer().getGameManager().getDatabase().getUserScore();
+			cm.getPlayer().setGameManager(null);
+			cm.sendSimple("\t\t\t\t\t\t\t\t\t\t  #e[Unscramble]#n\r\n\t\t\t\t\t\t\t\t\t #d#eDIFFICULTY:#r Normal#n#b\r\n\t\t\t\t\t\t\t\t#L0#Start Game #k#e(Solo)#n#l#b\r\n\t\t\t\t\t\t\t\t#L1#Start Game #k#e(PVP)#n#l\r\n\r\n\t\t\t\t\t\t\t\t\t\t #kYour score: " + (score > 0 ? score : 0));
+		} else {
+			cm.sendYesNo("Would you like to leave this game?");
+			sel = 1;
+		}
+	} else if (status == 2) {
+		if(sel == 0) {			
+			if(selection == 0) {
+				cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), 101000004, "unscramble"));
+				cm.getPlayer().getGameManager().createInstancedMap();
+				cm.getPlayer().getGameManager().startGame(Unscramble.class, false);
+			} else {
+				if(cm.getPlayer().getParty() != null) {
+					if(cm.isLeader()) {
+						var party = cm.getPlayer().getParty().getMembers();
+						var inMap = cm.partyMembersInMap();
+						if(party.size() == 2) {
+							if(inMap == party.size()) {
+								var opponent = cm.getClient().getChannelServer().getPlayerStorage().getCharacterByName(party.get(1).getName());
+								var map = cm.createInstancedMap(101000004);
+								cm.getPlayer().setGameManager(new GameManager(cm.getPlayer(), opponent, map, "unscramble"));
+								cm.getPlayer().getGameManager().startGame(UnscramblePVP.class, true);								
+							} else {
+								cm.sendOk("\t\t\t\t\t\t\t\t\t\t  #e[Unscramble]#n\r\n\t\t\t\t\tPlease make sure all members are in the map.");
+							}
+						} else {
+							cm.sendOk("\t\t\t\t\t\t\t\t\t\t  #e[Unscramble]#n\r\n\t\t\t\t\tPlease make sure you have 2 in your party.");
+						}
+					} else {
+						cm.sendOk("\t\t\t\t\t\t\t\t\t\t  #e[Unscramble]#n\r\n\t\t\t\t\t\tPlease make sure you are the leader.");
+					}
+				} else {
+					cm.sendOk("\t\t\t\t\t\t\t\t\t\t  #e[Unscramble]#n\r\n\t\t\t\t\t\t\t\t\tPlease get into a party.");
+				}
+			}
+			cm.dispose();
+		} else if(sel == 1) {
+			if(cm.getPlayer().getGameManager() != null) {
+				cm.getPlayer().getGameManager().getCurrentGame().endGame();
+				cm.dispose();
+				return;
+			}
+			cm.warp(325090000);
+			cm.dispose();
+		}
+	}
 }
