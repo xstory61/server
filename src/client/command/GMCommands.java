@@ -97,6 +97,10 @@ public class GMCommands {
                     case "servermessage":
 			c.getWorldServer().setServerMessage(StringUtil.joinStringFrom(sub, 1));
                         break;
+                        
+                    case "tag":
+                    	//test
+                    	break;
                     
                     case "proitem":
                         if (sub.length < 3) {
