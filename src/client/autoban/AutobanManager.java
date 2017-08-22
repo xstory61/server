@@ -99,18 +99,10 @@ public class AutobanManager {
      * 5: UseCatchItem<br>
      * 6: Item Drop<br>
      * 7: Chat<br>
-     * 8: callgm
      *
      * @param type type
      * @return Timestamp checker
      */
-    
-    public boolean canCallGM() {
-    	if(spam[8] == 0) return true;
-    	
-    	return (spam[8] + 300000 <= System.currentTimeMillis());
-    	
-    }
     public void setTimestamp(int type, int time, int times) {
         if (this.timestamp[type] == time) {  
             this.timestampcounter[type]++;
