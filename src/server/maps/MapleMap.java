@@ -147,7 +147,9 @@ public class MapleMap {
     private final WriteLock chrWLock;
     private final ReadLock objectRLock;
     private final WriteLock objectWLock;
-
+    // chalk
+    private boolean chalkclosable = true;
+    private boolean chalkallowed = true;
     public MapleMap(int mapid, int world, int channel, int returnMapId, float monsterRate) {
         this.mapid = mapid;
         this.channel = channel;
@@ -1118,7 +1120,19 @@ public class MapleMap {
             objectRLock.unlock();
         }
     }
-
+    // Iced Additions
+    public void setChalk(boolean off){
+        chalkallowed = off;
+    }
+    public boolean isChalkAllowed(){
+        return chalkallowed;
+    }
+    public void setClosable(boolean cant){
+        chalkclosable = cant;
+    }
+    public boolean isClosable(){
+        return chalkclosable;
+    }
     public void shuffleReactors() {
         List<Point> points = new ArrayList<>();
         objectRLock.lock();

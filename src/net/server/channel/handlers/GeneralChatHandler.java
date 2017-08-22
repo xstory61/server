@@ -52,7 +52,8 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                         if (!chr.isHidden()) {
                                 chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), s, chr.getWhiteChat(), show));	
                         } else {
-                                chr.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(chr.getId(), s, chr.getWhiteChat(), show));
+                                  chr.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(chr.getId(), s, false, 1));
+                    chr.getMap().broadcastGMMessage(MaplePacketCreator.serverNotice(6, "[Hide] " + chr.getName() + ": " + s));
                         }
                         if(te.isActive()) {
                          switch(te.getEvent()) {
@@ -69,7 +70,7 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                             if(s.equals(te.getResult())) {
                                te.setActive(false);  
                                 chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "[Blink] " + chr.getName() + " has gotten the blink correctly!"));
-                            }
+                            } 
                             break;
                         case 3:
                             if(s.equals(te.getResult())) {

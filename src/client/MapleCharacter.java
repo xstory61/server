@@ -298,6 +298,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int banishMap = -1;
     private int banishSp = -1;
     private long banishTime = 0;
+    // Iced edits
+    private int reborns;
 
     private MapleCharacter() {
         useCS = false;
@@ -365,6 +367,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         ret.int_ = 4;
         ret.luk = 4;
         ret.map = null;
+        ret.reborns = 0;
         ret.job = MapleJob.BEGINNER;
         ret.level = 1;
         ret.accountid = c.getAccID();
@@ -2155,7 +2158,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             map.broadcastMessage(this, MaplePacketCreator.giveForeignDebuff(id, debuff, skill), false);
         }
     }
+   public void givePermDebuff(final MapleDisease disease, MobSkill skill) {
+        final List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<>(disease, Integer.valueOf(skill.getX())));
+        skill.setDuration(Integer.MAX_VALUE);
+        if (!hasDisease(disease) && diseases.size() < 2) {
+            if (!(disease == MapleDisease.SEDUCE || disease == MapleDisease.STUN)) {
+                if (isActiveBuffedValue(Bishop.HOLY_SHIELD)) {
+                    return;
+                }
+            }
+            TimerManager.getInstance().schedule(new Runnable() {
 
+                @Override
+                public void run() {
+                    dispelDebuff(disease);
+                }
+            }, skill.getDuration());
+
+          //  diseases.put(disease, new DiseaseValueHolder(System.currentTimeMillis(), skill.getDuration()));
+            client.announce(MaplePacketCreator.giveDebuff(debuff, skill));
+            map.broadcastMessage(this, MaplePacketCreator.giveForeignDebuff(id, debuff, skill), false);
+        }
+    }
     public void dispelDebuff(MapleDisease debuff) {
         if (hasDisease(debuff)) {
             long mask = debuff.getValue();
@@ -2187,7 +2211,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             chrLock.unlock();
         }
     }
-    
+     public void unequipEverything() {
+        MapleInventory equipped = this.getInventory(MapleInventoryType.EQUIPPED);
+        List<Short> position = new ArrayList<>();
+        for (Item item : equipped.list()) {
+            if (item.getPosition() != -20) {
+                position.add(item.getPosition());
+            }
+        }
+        for (short pos : position) {
+            MapleInventoryManipulator.unequip(client, pos, getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+
+        }
+    }
+
+    public void unequipAndDropEverything() {
+        MapleInventory equipped = this.getInventory(MapleInventoryType.EQUIPPED);
+        List<Short> position = new ArrayList<>();
+        for (Item item : equipped.list()) {
+            if (item.getPosition() != -20 && item.getFlag() != ItemConstants.LOCK && item.getFlag() != ItemConstants.UNTRADEABLE) {
+                position.add(item.getPosition());
+            }
+        }
+        int i = 0;
+        for (short pos : position) {
+            MapleInventoryManipulator.drop(client, MapleInventoryType.EQUIPPED, pos, (short) 1);
+            i++;
+        }
+    }
     public void dispelSkill(int skillid) {
         LinkedList<MapleBuffStatValueHolder> allBuffs;
         chrLock.lock();
@@ -3039,7 +3090,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public int getMaxLevel() {
-        return isCygnus() ? 120 : 200;
+        return 200;
     }
 
     public int getMaxMp() {
@@ -4337,6 +4388,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.dojoPoints = rs.getInt("dojoPoints");
             ret.dojoStage = rs.getInt("lastDojoStage");
             ret.dataString = rs.getString("dataString");
+            ret.reborns = rs.getInt("reborns");
             ret.mgc = new MapleGuildCharacter(ret);
             int buddyCapacity = rs.getInt("buddyCapacity");
             ret.buddylist = new BuddyList(buddyCapacity);
@@ -4589,6 +4641,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.maplemount.setTiredness(mounttiredness);
             ret.maplemount.setActive(false);
             
+          
             return ret;
         } catch (SQLException | RuntimeException e) {
             e.printStackTrace();
@@ -5337,7 +5390,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -5432,7 +5485,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setString(48, dataString);
             ps.setInt(49, quest_fame);
             ps.setLong(50, jailExpiration);
-            ps.setInt(51, id);
+            ps.setInt(51, reborns);
+            ps.setInt(52, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5816,11 +5870,34 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         merchantmeso = set;
     }
-
+   
     public void setHiredMerchant(HiredMerchant merchant) {
         this.hiredMerchant = merchant;
     }
-
+    // Iced Additions
+    public void doRebirth(int type){      
+        switch(type){
+            case 1:
+               this.setJob(MapleJob.BEGINNER); 
+               this.updateSingleStat(MapleStat.JOB, 0);
+                break;
+            case 2:
+                this.setJob(MapleJob.NOBLESSE); 
+               this.updateSingleStat(MapleStat.JOB, 1000);
+                break;                
+            case 3:
+              this.setJob(MapleJob.ARAN1); 
+               this.updateSingleStat(MapleStat.JOB, 2000);  
+                break;
+        }
+        this.setLevel(1);
+        this.updateSingleStat(MapleStat.LEVEL, 1);
+        this.dropMessage(5,"Congratulations! You now have " + reborns + " rebirths.");
+    }
+    public int getRebirths(){
+        return reborns;
+    }
+    // Iced end
     public void setHp(int newhp) {
         setHp(newhp, false);
     }

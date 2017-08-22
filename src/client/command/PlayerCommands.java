@@ -269,20 +269,29 @@ public class PlayerCommands {
 			break;
                     
 		case "staff":
-			player.yellowMessage("MapleSolaxia Staff");
-			player.yellowMessage("Aria - Administrator");
-			player.yellowMessage("Twdtwd - Administrator");
-			player.yellowMessage("Exorcist - Developer");
-			player.yellowMessage("SharpAceX - Developer");
-			player.yellowMessage("Zygon - Freelance Developer");
-			player.yellowMessage("SourMjolk - Game Master");
-			player.yellowMessage("Kanade - Game Master");
-			player.yellowMessage("Kitsune - Game Master");
-                        player.yellowMessage("MapleSolaxiaV2 Staff");
-                        player.yellowMessage("Ronan - Freelance Developer");
-                        player.yellowMessage("Vcoc - Freelance Developer");
+			player.yellowMessage("XStory");
+			player.yellowMessage("Art");
+			player.yellowMessage("Alyschu");
+			player.yellowMessage("Iced");
 			break;
-                    
+                 case "chalkboard":
+            case "chalktalk":
+            case "chalk":
+            case "c":    
+                if (player.getMap().isChalkAllowed()) {
+                    if (sub.length > 1) {
+                        String text = StringUtil.joinStringFrom(sub, 1);
+                        player.setChalkboard(text);
+                        player.getMap().broadcastMessage(MaplePacketCreator.useChalkboard(player, false));
+
+                    } else {
+                        player.dropMessage(5, "Error.. Please enter message.");
+                    }
+
+                } else {
+                    player.dropMessage(5, "@chalk has been disabled in this map.");
+                }
+                break;    
 		case "lastrestart":
 		case "uptime":
 			long milliseconds = System.currentTimeMillis() - Server.uptime;
@@ -392,7 +401,7 @@ public class PlayerCommands {
                 else
                     player.dropMessage(5,"You have no smega!");
                 break;  
-		case "gacha":
+		/*case "gacha":
 			MapleGachapon.Gachapon gacha = null;
 			String search = StringUtil.joinStringFrom(sub, 1);
 			String gachaName = "";
@@ -419,55 +428,38 @@ public class PlayerCommands {
 			}
 			output += "\r\nPlease keep in mind that there are items that are in all gachapons and are not listed here.";
 			c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
-			break;
-                 case "job":
-                NPCScriptManager.getInstance().start(c, 2012022, null, null);
-                break;
-            case "shop":
+			break; */
+            // NPCs         
+            case "job": // Job Advancer
+           NPCScriptManager.getInstance().start(c, 2012022, null, null);
+            break;
+            case "shop": // AIO shop
             case "a":
                 NPCScriptManager.getInstance().start(c, 1092019, null, null);
-                break;
-            case "sprefix":
-                NPCScriptManager.getInstance().start(c, 9201052, null, null);
-                break;
-            case "infinity":
-            case "aio":
+                break;  
+            case "aio": // AIO 
             case "all":
                 NPCScriptManager.getInstance().start(c, 2141013, null, null);
-                break;
-            case "ioc":
-            case "bigbad":
-                NPCScriptManager.getInstance().start(c, 9000053, null, null);
-                break;
-            case "spinel":
+                break;         
+            case "spinel": // Spinel
                 NPCScriptManager.getInstance().start(c, 9000020, null, null);
-                break;
-            case "minigames":
-                NPCScriptManager.getInstance().start(c, 1012008, null, null);
-                break;
-            case "styler":
+                break;           
+            case "styler": // Styler
             case "kin":
             case "nimakin":
-            case "style":
-                /* 
-                      if(player.isMale()) {
-            NPCScriptManager.getInstance().start(c, 9900000, null, null);
-                      }
-                    else  {
-            NPCScriptManager.getInstance().start(c, 9900001, null, null);
-                      } */
+            case "style":          
                 NPCScriptManager.getInstance().start(c, 1530041, null, null);
                 break;
-            case "vp":
+            case "vp": // Vote Points
                  NPCScriptManager.getInstance().start(c, 2084001, null, null);
                 break;
-            case "fp":
+            case "fp": // Fishing Points
                NPCScriptManager.getInstance().start(c, 2141009, null, null);
                 break; 
-            case "jq":
+            case "jq": // Jump Quests
                 NPCScriptManager.getInstance().start(c, 1095000, null, null);
                 break;
-
+            
             case "fm":
                 if (sub.length > 1) {
                     if (Integer.parseInt(sub[1]) >= 1 && Integer.parseInt(sub[1]) <= 22) {
@@ -519,7 +511,36 @@ public class PlayerCommands {
                     }
                 }
                     break;
-                
+             case "rebirth":
+            case "reborn":
+            case "rb":
+            case "rebirthe":
+            case "reborne":
+            case "rbe":
+            case "rebirthc":
+            case "rebornc":
+            case "rbc":
+            case "rebirtha":
+            case "reborna":
+            case "rba":
+                if (player.getLevel() >= player.getMaxLevel()) {
+                    if (sub[0].endsWith("c")) {
+                        player.doRebirth((byte) 2);
+                        c.getPlayer().dropMessage("You now have " + c.getPlayer().getRebirths() + " rebirths!");
+                    } else if (sub[0].endsWith("a")) {
+                        player.doRebirth((byte) 3);
+                        c.getPlayer().dropMessage("You now have " + c.getPlayer().getRebirths() + " rebirths!");
+                    } else {
+                        player.doRebirth((byte) 1);
+                        c.getPlayer().dropMessage("You now have " + c.getPlayer().getRebirths() + " rebirths!");
+                    }                    
+                } else {
+                    player.message("You must be level " + player.getMaxLevel() + " or above to do this.");
+                }
+                break;          
+            case "home":
+                player.changeMap(910000000);            
+                break;    
             case "str": 
             case "dex":
             case "int":
@@ -573,10 +594,525 @@ public class PlayerCommands {
                     }
                 }
 
+                break; 
+                // Social Commands
+                 case "highfive":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've highfived " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " highfived you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "rape":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've raped " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " raped you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "kiss":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've kissed " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " kissed you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "fuck":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've fucked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " fucked you!");
+                        } else {
+                            player.dropMessage(6, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(6, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(6, "Error. Choose a player you'd like to fuck!");
+                }
+                break;
+            case "slap":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've slapped " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " slapped you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "dickslap":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've dickslapped " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " has slapped you with his dick!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "kick":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've kicked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " kicked you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "bite":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've bitten " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " has bitten you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "punch":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've punched " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " punched you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "yell":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're yelling at " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is yelling at you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "hug":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You gave " + victim.getName() + " a hug!");
+                            victim.dropMessage(6, player.getName() + " has given you a hug!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "poke":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've poked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " poked you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player you'd like to highfive!");
+                }
+                break;
+            case "choke":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've choked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " choked you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "stare":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're staring at " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is staring at you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "spank":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've spanked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " spanked you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "touch":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've touched " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " touched you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "harass":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've sexually harassed " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " sexually harassed you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "cheer":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've tried cheering " + victim.getName() + " up!");
+                            victim.dropMessage(6, player.getName() + " is trying to cheer you up!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "spit":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've spat at " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " spat at you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "weed":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're smoking weed with " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is smoking weed with you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "pat":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've patted " + victim.getName() + "'s head!");
+                            victim.dropMessage(6, player.getName() + " patted you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "smack":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You've smacked " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " smacked you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "wave":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're waving at " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is waving at you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "buttfuck":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're buttfucking " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is buttfucking you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "smile":
+                if (sub.length > 1) {
+                    MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
+                    if (victim != null) {
+                        if (player.getMeso() >= 10) {
+                            player.gainMeso(-10, true);
+                            victim.gainMeso(10, true);
+                            player.dropMessage(6, "You're smiling at " + victim.getName() + "!");
+                            victim.dropMessage(6, player.getName() + " is smiling at you!");
+                        } else {
+                            player.dropMessage(5, "Error. You don't have enough money!");
+                        }
+
+                    } else {
+                        player.dropMessage(5, "Error. The player doesn't exist!");
+                    }
+                } else {
+                    player.dropMessage(5, "Error. Choose a player.");
+                }
+                break;
+            case "save":
+                player.saveToDB();
+                break;
+            case "social":
+                player.dropMessage(6, "============================================");
+                player.dropMessage(6, "                                  Social Commands                      ");
+                player.dropMessage(6, "============================================");
+                player.dropMessage(6, "@highfive | @rape | @kiss | @fuck | @slap");
+                player.dropMessage(6, "@kick | @punch | @yell | @hug | @poke");
+                player.dropMessage(6, "@choke | @stare | @spank | @touch | @harass");
+                player.dropMessage(6, "@cheer | @spit | @weed | @dickslap | @bite");
+                player.dropMessage(6, "@pat | @smack | @wave | @smile | @buttfuck");
+                player.dropMessage(6, "Choose a victim and do with it as you please!");
                 break;
                 
-                
 		case "whatdropsfrom":
+                    String output = "";
 			if (sub.length < 2) {
 				player.dropMessage(5, "Please do @whatdropsfrom <monster name>");
                         break;
@@ -610,7 +1146,7 @@ public class PlayerCommands {
 			c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
 			break;
                     
-		case "whodrops":
+		case "whodrops":                    
 			if (sub.length < 2) {
 				player.dropMessage(5, "Please do @whodrops <item name>");
                         break;
@@ -769,20 +1305,7 @@ public class PlayerCommands {
 			player.dropMessage(5, "Your message '" + message + "' was sent to GMs.");
 			player.dropMessage(5, tips[Randomizer.nextInt(tips.length)]);
 			break;
-                    
-		case "bug":
-                    
-			if (sub.length < 2) {
-				player.dropMessage(5, "Message too short and not sent. Please do @bug <bug>");
-				break;
-			}
-			message = StringUtil.joinStringFrom(sub, 1);
-			Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[BUG]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message));
-			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(1, message));
-			FilePrinter.printError("bug.txt", MapleCharacter.makeMapleReadable(player.getName()) + ": " + message + "\r\n");
-			player.dropMessage(5, "Your bug '" + message + "' was submitted successfully to our developers. Thank you!");
-			break;
-		/*
+                /*
                 case "points":
 			player.dropMessage(5, "You have " + c.getVotePoints() + " vote point(s).");
 			if (c.hasVotedAlready()) {
@@ -797,54 +1320,7 @@ public class PlayerCommands {
 			}
 			break;
                 */
-		case "joinevent":
-			if(!FieldLimit.CANNOTMIGRATE.check(player.getMap().getFieldLimit())) {
-				MapleEvent event = c.getChannelServer().getEvent();
-				if(event != null) {
-					if(event.getMapId() != player.getMapId()) {
-						if(event.getLimit() > 0) {
-							player.saveLocation("EVENT");
-
-							if(event.getMapId() == 109080000 || event.getMapId() == 109060001)
-								player.setTeam(event.getLimit() % 2);
-
-							event.minusLimit();
-
-							player.changeMap(event.getMapId());
-						} else {
-							player.dropMessage("The limit of players for the event has already been reached.");
-						}
-					} else {
-						player.dropMessage(5, "You are already in the event.");
-					}
-				} else {
-					player.dropMessage(5, "There is currently no event in progress.");
-				}
-			} else {
-				player.dropMessage(5, "You are currently in a map where you can't join an event.");
-			}
-			break;
-                    
-		case "leaveevent":
-			int returnMap = player.getSavedLocation("EVENT");
-			if(returnMap != -1) {
-				if(player.getOla() != null) {
-					player.getOla().resetTimes();
-					player.setOla(null);
-				}
-				if(player.getFitness() != null) {
-					player.getFitness().resetTimes();
-					player.setFitness(null);
-				}
-				
-				player.changeMap(returnMap);
-				if(c.getChannelServer().getEvent() != null) {
-					c.getChannelServer().getEvent().addLimit();
-				}
-			} else {
-				player.dropMessage(5, "You are not currently in an event.");
-			}
-			break;
+		
                     
 		case "bosshp":
 			for(MapleMonster monster : player.getMap().getMonsters()) {

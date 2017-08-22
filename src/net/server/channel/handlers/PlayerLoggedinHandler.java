@@ -71,6 +71,8 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
         if (player == null) {
             try {
                 player = MapleCharacter.loadCharFromDB(cid, c, true);
+                if(player.isGM())
+                    player.toggleWhiteChat();
                 newcomer = true;
             } catch (SQLException e) {
                 e.printStackTrace();
