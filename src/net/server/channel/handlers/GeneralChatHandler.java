@@ -55,7 +55,6 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                                   chr.getMap().broadcastGMMessage(MaplePacketCreator.getChatText(chr.getId(), s, false, 1));
                     chr.getMap().broadcastGMMessage(MaplePacketCreator.serverNotice(6, "[Hide] " + chr.getName() + ": " + s));
                         }
-<<<<<<< HEAD
                         if(te.isActive()) {
                          switch(te.getEvent()) {
                         default:
@@ -106,9 +105,6 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
                             break;
                             
                     }
-
-                     
-=======
                         if(te != null) {
 	                        if(te.isActive()) {
 	                         switch(te.getEvent()) {
@@ -163,9 +159,9 @@ public final class GeneralChatHandler extends net.AbstractMaplePacketHandler {
 	
 	                     
 	                }
->>>>>>> a9bc28449be4ebf1ea05f1db9f8024b83c7c1fbc
                 }
             }
      }
+        }
 }
 

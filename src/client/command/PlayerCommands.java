@@ -1310,7 +1310,7 @@ public class PlayerCommands {
 			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(6,"[GM MESSAGE]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message)); // blue text;
 			FilePrinter.printError("gm.txt", MapleCharacter.makeMapleReadable(player.getName()) + ": " + message + "\r\n");
 			player.dropMessage(5, "Your message '" + message + "' was sent to GMs.");
-<<<<<<< HEAD
+//<<<<<<< HEAD
 			player.dropMessage(5, tips[Randomizer.nextInt(tips.length)]);
 			break;
                 /*
