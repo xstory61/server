@@ -168,6 +168,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         "nigger", "homo", "suck", "cum", "shit", "shitty", "condom", "security", "official", "rape", "nigga", "sex", "tit", "boner", "orgy", "clit", "asshole", "fatass", "bitch", "support", "gamemaster", "cock", "gaay", "gm",
         "operate", "master", "sysop", "party", "GameMaster", "community", "message", "event", "test", "meso", "Scania", "renewal", "yata", "AsiaSoft", "henesys"};
     private int world;
+    private boolean canMessageGM = true;
     private int accountid, id;
     private int rank, rankMove, jobRank, jobRankMove;
     private int level, str, dex, luk, int_, hp, maxhp, mp, maxmp;
@@ -6997,4 +6998,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     public void removeJailExpirationTime() {
         jailExpiration = 0;
     }
+
+	public boolean canMessageGM() {
+		return canMessageGM;
+	}
+	
+	public void canMessageGM(boolean set) {
+		this.canMessageGM = set;
+	}
 }

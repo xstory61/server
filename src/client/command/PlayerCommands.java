@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import net.server.Server;
 import net.server.channel.Channel;
 import provider.MapleData;
@@ -264,8 +267,8 @@ public class PlayerCommands {
                     
 		case "time":
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-			dateFormat.setTimeZone(TimeZone.getTimeZone("-GMT3"));
-			player.yellowMessage("Solaxia Server Time: " + dateFormat.format(new Date()));
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+3:00"));
+			player.yellowMessage("XStory Server Time: " + dateFormat.format(new Date()));
 			break;
                     
 		case "staff":
@@ -1294,18 +1297,41 @@ public class PlayerCommands {
                 break;
                     
 		case "gm":
+			if(!player.getAutobanManager().canCallGM()) {
+				System.out.println("Test");
+				player.dropMessage("You can't send a message to the GMs yet.");
+				return false;
+			}
 			if (sub.length < 3) { // #goodbye 'hi'
 				player.dropMessage(5, "Your message was too short. Please provide as much detail as possible.");
 				break;
 			}
 			String message = StringUtil.joinStringFrom(sub, 1);
-			Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[GM MESSAGE]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message));
-			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(1, message));
+			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(6,"[GM MESSAGE]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message)); // blue text;
 			FilePrinter.printError("gm.txt", MapleCharacter.makeMapleReadable(player.getName()) + ": " + message + "\r\n");
 			player.dropMessage(5, "Your message '" + message + "' was sent to GMs.");
+<<<<<<< HEAD
 			player.dropMessage(5, tips[Randomizer.nextInt(tips.length)]);
 			break;
                 /*
+=======
+			player.getAutobanManager().spam(8);
+			System.out.println(player.getAutobanManager().canCallGM());
+                    
+		case "bug":
+                    
+			if (sub.length < 2) {
+				player.dropMessage(5, "Message too short and not sent. Please do @bug <bug>");
+				break;
+			}
+			message = StringUtil.joinStringFrom(sub, 1);
+			Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[BUG]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message));
+			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(1, message));
+			FilePrinter.printError("bug.txt", MapleCharacter.makeMapleReadable(player.getName()) + ": " + message + "\r\n");
+			player.dropMessage(5, "Your bug '" + message + "' was submitted successfully to our developers. Thank you!");
+			break;
+		/*
+>>>>>>> a9bc28449be4ebf1ea05f1db9f8024b83c7c1fbc
                 case "points":
 			player.dropMessage(5, "You have " + c.getVotePoints() + " vote point(s).");
 			if (c.hasVotedAlready()) {
