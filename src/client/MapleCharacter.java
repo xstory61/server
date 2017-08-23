@@ -4388,7 +4388,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.dojoPoints = rs.getInt("dojoPoints");
             ret.dojoStage = rs.getInt("lastDojoStage");
             ret.dataString = rs.getString("dataString");
-           // ret.reborns = rs.getInt("reborns");
+            ret.reborns = rs.getInt("reborns");
             ret.mgc = new MapleGuildCharacter(ret);
             int buddyCapacity = rs.getInt("buddyCapacity");
             ret.buddylist = new BuddyList(buddyCapacity);
@@ -5390,7 +5390,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -5485,8 +5485,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setString(48, dataString);
             ps.setInt(49, quest_fame);
             ps.setLong(50, jailExpiration);
-          //  ps.setInt(51, reborns);
-            ps.setInt(51, id);
+            ps.setInt(51, reborns);
+            ps.setInt(52, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
