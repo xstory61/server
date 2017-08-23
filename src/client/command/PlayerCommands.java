@@ -264,8 +264,8 @@ public class PlayerCommands {
                     
 		case "time":
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-			dateFormat.setTimeZone(TimeZone.getTimeZone("-GMT3"));
-			player.yellowMessage("Solaxia Server Time: " + dateFormat.format(new Date()));
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+3"));
+			player.yellowMessage("XStory Server Time: " + dateFormat.format(new Date()));
 			break;
                     
 		case "staff":
@@ -1298,12 +1298,16 @@ public class PlayerCommands {
 				player.dropMessage(5, "Your message was too short. Please provide as much detail as possible.");
 				break;
 			}
+			if(!player.getAutobanManager().canMsgGM()) {
+				player.dropMessage("You can't msg a GM yet.");
+				break;
+			}
 			String message = StringUtil.joinStringFrom(sub, 1);
 			Server.getInstance().broadcastGMMessage(MaplePacketCreator.sendYellowTip("[GM MESSAGE]:" + MapleCharacter.makeMapleReadable(player.getName()) + ": " + message));
-			Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(1, message));
 			FilePrinter.printError("gm.txt", MapleCharacter.makeMapleReadable(player.getName()) + ": " + message + "\r\n");
 			player.dropMessage(5, "Your message '" + message + "' was sent to GMs.");
 			player.dropMessage(5, tips[Randomizer.nextInt(tips.length)]);
+			player.getAutobanManager().spam(8);
 			break;
                 /*
                 case "points":

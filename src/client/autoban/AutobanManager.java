@@ -86,6 +86,13 @@ public class AutobanManager {
     public long getLastSpam(int type) {
         return spam[type];
     }
+    
+    public boolean canMsgGM() {
+    	if (this.spam[8] == 0) return true;
+    	
+    	return this.spam[8] + 30000 <= System.currentTimeMillis();
+    	
+    }
 
     /**
      * Timestamp checker
@@ -99,6 +106,7 @@ public class AutobanManager {
      * 5: UseCatchItem<br>
      * 6: Item Drop<br>
      * 7: Chat<br>
+     * 8: GMSpam
      *
      * @param type type
      * @return Timestamp checker
