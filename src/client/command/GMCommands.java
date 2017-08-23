@@ -127,7 +127,9 @@ public class GMCommands {
                                 player.dropMessage("Make sure it's an equippable item.");
                         }
                         break;
-                    
+                    case "pushed":
+                        player.dropMessage(5,"Sucessful.");
+                        break;
                     case "seteqstat":
                         if (sub.length < 2) {
                                 player.yellowMessage("Syntax: !seteqstat <statvalue>");
