@@ -8,6 +8,7 @@
  
 var status;
 var id;
+var count
 patienceMap = [["The Forest Of Patience <Step 1>", 101000100], ["The Forest Of Patience <Step 2>", 101000101], ["The Forest Of Patience <Step 3>", 101000102], ["The Forest Of Patience <Step 4>", 101000103], ["The Forest Of Patience <Step 5>", 101000104]]; //The Forest of Patience
 deepMap = [["The Deep Forest Of Patience <Step 1>", 105040310], ["The Deep Forest Of Patience <Step 2>", 105040311], ["The Deep Forest Of Patience <Step 3>", 105040312], ["The Deep Forest Of Patience <Step 4>", 105040313] ,["The Deep Forest Of Patience <Step 5>", 105040314], ["The Deep Forest Of Patience <Step 6>", 105040315], ["The Deep Forest Of Patience <Step 7>", 105040316]]; //The Deep Forest Of Patience
 fitnessMap = [["MapleStory Physical Fitness Challenge <Level 1>", 109040001], ["MapleStory Physical Fitness Challenge <Level 2>", 109040002], ["MapleStory Physical Fitness Challenge <Level 3>", 109040003], ["MapleStory Physical Fitness Challenge <Level 4>", 109040004]]; //Physical Fitness Challenge
@@ -130,57 +131,56 @@ function action(mode, type, sel)
 			}
 			cm.sendSimple(str);	
 		}
-		id = sel;
+		count = sel;
 	}
 	else if (status == 2) 
 	{
-		cm.dispose();
 		if (sel >= 0)
 		{
-			switch (id) //Works exactly as random above. Warps party if in one automatically. id states for counter Multi-Dimentional Arrays on top of the script. 1 = patienceMap, 2 = deepMap and so carry on.
+			switch (count) //Works exactly as random above. Warps party if in one automatically. count states for counter Multi-Dimentional Arrays on top of the script. 1 = patienceMap, 2 = deepMap and so carry on.
 			{
 				case 1:
-					if (cm.getParty() == null) cm.warp(patienceMap[sel][1], 0);
-					else cm.warpParty(patienceMap[sel][1], 0);
-					cm.dispose();
+					id = patienceMap[sel][1];
 					break;
 				case 2:
-					if (cm.getParty() == null) cm.warp(deepMap[sel][1], 0);
-					else cm.warpParty(deepMap[sel][1], 0);
-					cm.dispose();
+					id = deepMap[sel][1];
 					break;
 				case 3:
-					if (cm.getParty() == null) cm.warp(fitnessMap[sel][1], 0);
-					else cm.warpParty(fitnessMap[sel][1], 0);
-					cm.dispose();
+					id = fitnessMap[sel][1];
 					break;
 				case 4:
-					if (cm.getParty() == null) cm.warp(siteMap[sel][1], 0);
-					else cm.warpParty(siteMap[sel][1], 0);
-					cm.dispose();
+					id = siteMap[sel][1];
 					break;
 				case 5:
-					if (cm.getParty() == null) cm.warp(lavaMap[sel][1], 0);
-					else cm.warpParty(lavaMap[sel][1], 0);
-					cm.dispose();
+					id = lavaMap[sel][1];
 					break;
 				case 6:
-					if (cm.getParty() == null) cm.warp(petMap[sel][1], 0);
-					else cm.warpParty(petMap[sel][1], 0);
-					cm.dispose();
+					id = petMap[sel][1];
 					break;
 				case 7:
-					if (cm.getParty() == null) cm.warp(witchMap[sel][1], 0);
-					else cm.warpParty(witchMap[sel][1], 0);
-					cm.dispose();
+					id = witchMap[sel][1];
 					break;
 				case 8:
-					if (cm.getParty() == null) cm.warp(otherMap[sel][1], 0);
-					else cm.warpParty(otherMap[sel][1], 0);
-					cm.dispose();
+					id = otherMap[sel][1];
 					break;
 			}
-				
+			cm.sendSimple("#L0#Start JQ#l\r\n" +
+			              "#L1#Ranking#l"
+						  );
+		}
+	}
+	else if (status == 3)
+	{
+		cm.dispose();
+		if (sel == 0)
+		{
+			if(cm.getParty() == null) cm.warp(id, 0);
+			else cm.warpParty(id, 0);
+			cm.dispose();
+		}
+		else if (sel == 1)
+		{
+			cm.sendOk("Coming soon!");
 		}
 	}
 }
