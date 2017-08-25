@@ -439,7 +439,7 @@ public class PlayerCommands {
                 break;  
             case "aio": // AIO 
             case "all":
-                NPCScriptManager.getInstance().start(c, 2141013, null, null);
+                NPCScriptManager.getInstance().start(c, 22000, null, null);
                 break;         
             case "spinel": // Spinel
                 NPCScriptManager.getInstance().start(c, 9000020, null, null);
