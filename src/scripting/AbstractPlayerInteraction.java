@@ -84,11 +84,11 @@ public class AbstractPlayerInteraction {
         public MapleCharacter getChar() {
 		return c.getPlayer();
 	}
-        
+       
         public MapleMap getMap() {
                 return c.getPlayer().getMap();
         }
-        
+            
         public int getMarketPortalId(int mapId) {
             return getMarketPortalId(getWarpMap(mapId));
         }

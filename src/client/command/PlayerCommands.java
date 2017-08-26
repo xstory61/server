@@ -265,11 +265,10 @@ public class PlayerCommands {
 		case "time":
 			DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+3"));
-			player.yellowMessage("XStory Server Time: " + dateFormat.format(new Date()));
+			player.yellowMessage("Interstellar Server Time: " + dateFormat.format(new Date()));
 			break;
                     
 		case "staff":
-			player.yellowMessage("XStory");
 			player.yellowMessage("Art");
 			player.yellowMessage("Alyschu");
 			player.yellowMessage("Iced");
@@ -455,9 +454,6 @@ public class PlayerCommands {
                 break;
             case "fp": // Fishing Points
                NPCScriptManager.getInstance().start(c, 2141009, null, null);
-                break; 
-            case "jq": // Jump Quests
-                NPCScriptManager.getInstance().start(c, 1095000, null, null);
                 break;
             
             case "fm":
