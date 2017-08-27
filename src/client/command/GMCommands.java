@@ -714,7 +714,14 @@ public class GMCommands {
                         cserv.getPlayerStorage().getCharacterByName(sub[1]).getClient().addVotePoints(Integer.parseInt(sub[2]));
                         player.message("VP given.");
                     break;
-                
+                case "givejq":
+                        if (sub.length < 3){
+                                player.yellowMessage("Syntax: !givejq <playername> <amount>");
+                                break;
+                        }
+                        cserv.getPlayerStorage().getCharacterByName(sub[1]).getClient().getPlayer().addJQPoints((byte) Integer.parseInt(sub[2]));
+                        player.message("JQP Given.");
+                        break;
                 case "givems":
                         if (sub.length < 3){
 				player.yellowMessage("Syntax: !givemx <playername> <gainmx>");

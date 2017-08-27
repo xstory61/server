@@ -300,6 +300,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private long banishTime = 0;
     // Iced edits
     private int reborns;
+    // Art edits
+    private int jqpoints;
 
     private MapleCharacter() {
         useCS = false;
@@ -373,6 +375,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         ret.accountid = c.getAccID();
         ret.buddylist = new BuddyList(20);
         ret.maplemount = null;
+        // Art edits
+        ret.jqpoints = 0;
+        //
         ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(24);
         ret.getInventory(MapleInventoryType.USE).setSlotLimit(24);
         ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(24);
@@ -4392,6 +4397,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.mgc = new MapleGuildCharacter(ret);
             int buddyCapacity = rs.getInt("buddyCapacity");
             ret.buddylist = new BuddyList(buddyCapacity);
+            //Art edits
+            ret.jqpoints = rs.getInt("jqpoints");
             ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equipslots"));
             ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("useslots"));
             ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
@@ -5390,7 +5397,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ?, jqpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -5486,7 +5493,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setInt(49, quest_fame);
             ps.setLong(50, jailExpiration);
             ps.setInt(51, reborns);
-            ps.setInt(52, id);
+            ps.setInt(52, jqpoints);
+            ps.setInt(53, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5930,6 +5938,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         updateSingleStat(MapleStat.HP, hp);
         updateSingleStat(MapleStat.MP, mp);
     }
+    
+    //Art edits
+    public int getJQPoints(){
+        return jqpoints;
+    }
+    
+    public void setJQPoints(byte amt){
+        this.jqpoints = amt;
+    }
+    
+    public void addJQPoints(byte pts){
+        this.jqpoints += pts;
+    }
+    // end
 
     public void setInt(int int_) {
         this.int_ = int_;

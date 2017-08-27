@@ -1,8 +1,9 @@
-/* @Author SharpAceX
-        Name: Steward
-        Map(s): Foyer
-        Info: Steward
-        NPC ID: 9201143.js
+/*
+	Interstellar
+*/
+/*  Author:			Art
+	NPC Name: 		Athena Pierce
+	Description: 	Jump Quest NPC
 */
 
 function start() {

@@ -1,5 +1,5 @@
 /*
-	XStory 2017
+	Interstellar
 */
 /*  Author:			Art
 	NPC Name: 		Athena Pierce
@@ -16,7 +16,9 @@ siteMap = [["Line 3 Construction Site B1 <Area 1>", 103000900], ["Line 3 Constru
 lavaMap = [["Breath of Lava <Level 1>", 280020000], ["Breath of Lava <Level 2>", 280020001]]; //Breath of Lava
 petMap = [["Pet-Walking Road", 100000202],["Ludibrium Pet Walkway", 220000006]]; // Henesys and Ludibrium Pet Walkaway
 witchMap = [["Witch Tower 1st Floor <Part I>", 980041000], ["Witch Tower 1st Floor <Part II>", 980043000], ["Witch Tower 2nd Floor <Part I>", 980041100], ["Witch Tower 2nd Floor <Part II>", 980043100]]; //Witch Tower
-otherMap = [["Ghost Chimney", 682000200], ["Utah's Pig Farm", 900000000], ["End of the Maze <Part I>", 990000611], ["End of the Maze <Part II>", 990000641], ["Waterway Maze", 990000620], ["Valley of Heroes 1", 610020000], ["Valley of Heroes 2", 610020001], ["The Forgotten Darkness", 922020000], ["Rider's Field", 921110000], ["Rescue Gaga!", 922240000], ["Forest's Empty Lot", 930000500]]; // Other maps
+mazeMap = [["End of the Maze <Part I>", 990000611], ["End of the Maze <Part II>", 990000641], ["Waterway Maze", 990000620]];
+valleyMap = [["Valley of Heroes 1", 610020000], ["Valley of Heroes 2", 610020001]];
+otherMap = [["Ghost Chimney", 682000200], ["Utah's Pig Farm", 900000000], ["The Forgotten Darkness", 922020000], ["Rider's Field", 921110000], ["Rescue Gaga!", 922240000], ["Forest's Empty Lot", 930000500]]; // Other maps
 randomMap = [101000100, 101000101, 101000102, 101000103, 101000104,
 			 105040310, 105040311, 105040312, 105040313, 105040314, 
 			 105040315, 105040316, 109040001, 109040002, 109040003, 
@@ -43,16 +45,18 @@ function action(mode, type, sel)
 	if (status == 0) // Main status as you click on the NPC. Made it easier to edit for future updates.
 	{
 		str = "#ePlease choose which map...";
-		cm.sendSimple("\t\t\t\t\t\t\t#b#eInterstellar Jump Quest#k\r\n" +
-					  "\r\n#r#L0#Random Map#l#k\r\n\r\n " +
-					  "\r\n#L1#The Forest of Patience#l " +
-					  "\t#L2#Deep Forest of Patience#l " +
-					  "\r\n#L3#Fitness Test#l " +
-					  "\t\t\t\t\t\t#L4#Line 3 Construction Site#l " +
-					  "\r\n#L5#Breath of Lava#l " +
-					  "\t\t\t\t\t#L6#Pet Walkway#l " +
-					  "\r\n#L7#Witch Tower#l\r\n" +
-					  "\r\n#L8##bOther#l#k");
+		cm.sendSimple("\t\t\t\t\t\t\t#b#eInterstellar Jump Quest#k\r\n\r\n#r" +
+					  "#L0#Random Map#l#k\r\n\r\n\r\n" +
+					  "#L1#The Forest of Patience#l\t" +
+					  "#L2#Deep Forest of Patience#l\r\n" +
+					  "#L3#Fitness Test#l\t\t\t\t\t\t" +
+					  "#L4#Line 3 Construction Site#l\r\n" +
+					  "#L5#Breath of Lava#l\t\t\t\t    " +
+					  "#L6#Pet Walkway#l\r\n" +
+					  "#L7#Witch Tower#l\t\t\t\t\t   " +
+					  "#L8#End of Maze#l\r\n" +
+					  "#L9#Valley of Heroes#l\t\t\t\t" +
+					  "#L10##bOther#l#k");
 	}
 	else if (status == 1)
 	{
@@ -122,7 +126,23 @@ function action(mode, type, sel)
 			}
 			cm.sendSimple(str);	
 		}
-		else if (sel == 8) //Other maps
+		else if (sel == 8) //Maze maps
+		{
+			for (i = 0; i < mazeMap.length; i++)
+			{
+				str += "\r\n#L" + i + "#" + mazeMap[i][0] + "#l";
+			}
+			cm.sendSimple(str);	
+		}
+		else if (sel == 9) //Valley maps
+		{
+			for (i = 0; i < valleyMap.length; i++)
+			{
+				str += "\r\n#L" + i + "#" + valleyMap[i][0] + "#l";
+			}
+			cm.sendSimple(str);	
+		}
+		else if (sel == 10) //Other maps
 		{
 			for (i = 0; i < otherMap.length; i++)
 			{
@@ -160,11 +180,17 @@ function action(mode, type, sel)
 					id = witchMap[sel][1];
 					break;
 				case 8:
+					id = mazeMap[sel][1];
+					break;
+				case 9:
+					id = valleyMap[sel][1];
+					break;
+				case 8:
 					id = otherMap[sel][1];
 					break;
 			}
 			cm.sendSimple("#L0##eStart JQ#l\r\n" +
-			              "#L1#Ranking#l"
+			              "#L1#Records#l"
 						  );
 		}
 	}

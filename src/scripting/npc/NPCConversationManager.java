@@ -65,7 +65,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         private int npcOid;
 	private String scriptName;
 	private String getText;
-        
+        //Art edits
         public NPCConversationManager(MapleClient c, int npc, String scriptName) {
                this(c, npc, -1, scriptName);
         }
@@ -237,6 +237,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 	public int getLevel() {
 		return getPlayer().getLevel();
 	}
+        
+        public int getJQPoints() {
+                return getPlayer().getJQPoints();
+        }
+    
+        public void setJQPoints(byte amt){
+                 getPlayer().setJQPoints(amt);
+        }
+    
+         public void addJQPoints(byte pts){
+                getPlayer().addJQPoints(pts);
+        }    
 
 	public void showEffect(String effect) {
 		getPlayer().getMap().broadcastMessage(MaplePacketCreator.environmentChange(effect, 3));
