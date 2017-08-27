@@ -17,8 +17,10 @@ maps = [[101000100, 1], [101000101, 1], [101000102, 1], [101000103, 1], [1010001
 		];
 var id;
 var i;
+var check;
 function start() 
 {
+	check = 0;
 	id = cm.getMapId();
 	for (i = 0; i < maps.length; i++)
 	{
@@ -28,13 +30,13 @@ function start()
 			cm.warp(910000000);
 			cm.getPlayer().message("Received " + maps[i][1] + " Jump Quest Points");
 			cm.dispose();
+			check = 1;
 			break;
 		}
-		else
-		{
-			cm.sendOk("Hello There!");
-			cm.dispose();
-			break;
-		}
+		if (check == 1) break;
+	}
+	if (check == 0){
+	cm.sendOk("Hello There!");
+	cm.dispose();
 	}
 }
