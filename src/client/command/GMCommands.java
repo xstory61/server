@@ -107,6 +107,41 @@ public class GMCommands {
                 break;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="reloadevents">
+            case "pnpc":    
+                int npcId = Integer.parseInt(sub[1]);
+                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
+                int xpos = player.getPosition().x;
+                int ypos = player.getPosition().y;
+                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
+                if (npc != null && !npc.getName().equalsIgnoreCase("MISSINGNO")) {
+                    npc.setPosition(player.getPosition());
+                    npc.setCy(ypos);
+                    npc.setRx0(xpos + 50);
+                    npc.setRx1(xpos - 50);
+                    npc.setFh(fh);
+                    try {
+                        Connection con = DatabaseConnection.getConnection();
+                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+                        ps.setInt(1, npcId);
+                        ps.setInt(2, 0);
+                        ps.setInt(3, fh);
+                        ps.setInt(4, ypos);
+                        ps.setInt(5, xpos + 50);
+                        ps.setInt(6, xpos - 50);
+                        ps.setString(7, "n");
+                        ps.setInt(8, xpos);
+                        ps.setInt(9, ypos);
+                        ps.setInt(10, player.getMapId());
+                        ps.executeUpdate();
+                    } catch (SQLException e) {
+                        player.dropMessage("Failed to save NPC to the database");
+                    }
+                    player.getMap().addMapObject(npc);
+                    player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
+                } else {
+                    player.dropMessage("You have entered an invalid Npc-Id");
+                }
+                    break;
             case "reloadevents":
                 for (Channel ch : Server.getInstance().getAllChannels()) {
                     ch.reloadEventScriptManager();
