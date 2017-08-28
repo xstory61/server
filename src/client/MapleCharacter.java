@@ -298,6 +298,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int banishMap = -1;
     private int banishSp = -1;
     private long banishTime = 0;
+    // matt edits
+    private MapleEngagement engagement;
     // Iced edits
     private int reborns;
     // Art edits
@@ -3079,13 +3081,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         return markedMonster;
     }
 
-    public MapleRing getMarriageRing() {
-        return marriageRing;
-    }
-
-    public int getMarried() {
-        return married;
-    }
 
     public int getMasterLevel(Skill skill) {
         if (skills.get(skill) == null) {
@@ -4467,6 +4462,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
                 }
                 ret.loggedIn = true;
             }
+            if(rs.getInt("engaged") > 0) {
+            	ps = con.prepareStatement("SELECT * FROM engagements WHERE id=?");
+            	ps.setInt(1, rs.getInt("engaged"));
+            	rs = ps.executeQuery();
+            	
+            	if(rs.next()) {
+            		ret.engagement = new MapleEngagement(rs.getInt("id"), rs.getInt("prtId"), rs.getString("prtName"), rs.getInt("ringId"));
+            	}
+            }
+            
             rs.close();
             ps.close();
             ps = con.prepareStatement("SELECT mapid,vip FROM trocklocations WHERE characterid = ? LIMIT 15");
@@ -5404,7 +5409,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ?, jqpoints = ?, rbpoints = ?, epoints = ?, fpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ?, jqpoints = ?, rbpoints = ?, epoints = ?, fpoints = ?, engaged = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -5504,7 +5509,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setInt(53, rbpoints);
             ps.setInt(54, epoints);
             ps.setInt(55, fpoints);
-            ps.setInt(56, id);
+            ps.setInt(56, engagement != null ? engagement.getId() : 0);
+            ps.setInt(57, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -7065,5 +7071,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     
     public void removeJailExpirationTime() {
         jailExpiration = 0;
+    }
+    
+	public MapleEngagement getEngagement() {
+		// TODO Auto-generated method stub
+		return this.engagement;
+	}
+	
+	public void setEngagement(MapleEngagement eng) {
+		this.engagement = eng;
+	}
+	
+    public void addMarriageRing(MapleRing r) {
+        marriageRing = r;
+    }
+    
+    public MapleRing getMarriageRing() {
+        return marriageRing;
     }
 }

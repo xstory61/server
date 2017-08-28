@@ -1913,7 +1913,7 @@ public class MaplePacketCreator {
                 if (chr.getMarriageRing() != null) {
                         mplew.writeInt(chr.getId());
                         mplew.writeInt(chr.getMarriageRing().getPartnerChrId());
-                        mplew.writeInt(chr.getMarriageRing().getRingId());
+                        mplew.writeInt(chr.getMarriageRing().getItemId());
                 }
         }
 
@@ -6474,17 +6474,17 @@ public class MaplePacketCreator {
                         mplew.writeInt(0);
                         mplew.writeInt(ring.getItemId());
                 }
-                mplew.writeShort(chr.getMarriageRing() != null ? 1 : 0);
-                int marriageId = 30000;
-                if (chr.getMarriageRing() != null) {
-                        mplew.writeInt(marriageId);
-                        mplew.writeInt(chr.getId());
-                        mplew.writeInt(chr.getMarriageRing().getPartnerChrId());
-                        mplew.writeShort(3);
-                        mplew.writeInt(chr.getMarriageRing().getRingId());
-                        mplew.writeInt(chr.getMarriageRing().getPartnerRingId());
-                        mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getName() : chr.getMarriageRing().getPartnerName(), '\0', 13));
-                        mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getMarriageRing().getPartnerName() : chr.getName(), '\0', 13));
+                mplew.writeShort(chr.getEngagement() != null ? 1 : 0);
+                if(chr.getEngagement() != null) {
+        			   mplew.writeInt(30005);
+        			   System.out.println("Marriagering: " + (chr.getMarriageRing() != null ? "1" : "0") + " " + chr.getEngagement().getItemId());
+        			   mplew.writeInt(chr.getGender() == 0 ? chr.getId() : chr.getEngagement().getPartnerId());
+        			   mplew.writeInt(chr.getGender() == 0 ? chr.getEngagement().getPartnerId() : chr.getId());
+        			   mplew.writeShort(chr.getMarriageRing() != null ? 3 : 1); // or 1? will have to check
+        			   mplew.writeInt(chr.getEngagement().getItemId()); // nGroomItemID
+        			   mplew.writeInt(chr.getEngagement().getItemId()); // nBrideItemID
+        			   mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getName() : chr.getEngagement().getPartnerName(), '\0', 13));
+        			   mplew.writeAsciiString(StringUtil.getRightPaddedStr(chr.getGender() == 0 ? chr.getEngagement().getPartnerName() : chr.getName(), '\0', 13));
                 }
         }
 

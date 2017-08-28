@@ -1,155 +1,114 @@
 /*
-	This file is part of the OdinMS Maple Story Server
-    Copyright (C) 2008 Patrick Huy <patrick.huy@frz.cc>
-					   Matthias Butz <matze@odinms.de>
-					   Jan Christian Meyer <vimes@odinms.de>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation version 3 as published by
-    the Free Software Foundation. You may not use, modify or distribute
-    this program under any other version of the GNU Affero General Public
-    License.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/*
- * @Author Jvlaple
- * 
- * Wedding for odinMS
+ * Author Matt
+ * Interstellar
  */
 importPackage(java.lang);
 
 importPackage(Packages.world);
 importPackage(Packages.client);
 importPackage(Packages.server.maps);
+importPackage(Packages.tools);
 
 var exitMap;
 var altarMap;
 var cakeMap;
 var instanceId;
 var minPlayers = 1;
-
+var weddingTime = 0; // 20mins.
+var mw;
 function init() {
     exitMap = em.getChannelServer().getMapFactory().getMap(680000500); //Teh exit map :) <---------t
     altarMap = em.getChannelServer().getMapFactory().getMap(680000210); //Teh altar map
-    cakeMap = em.getChannelServer().getMapFactory().getMap(680000300); //Teh cake
+    cakeMap = em.getChannelServer().getMapFactory().getMap(680000300); //Teh cake // 5 mins
     instanceId = 1;
 }
 
-function monsterValue(eim, mobId) {
-    return 1;
-}
-
-
-
-function setup(eim) {
+function setup() {
+	System.out.println("Got here - Cathedral Wedding");
     var instanceName = "CathedralWedding" + instanceId;
     var eim = em.newInstance(instanceName);
-    instanceId++;
-
-    var eim = em.newInstance(instanceName);
-	
-    var mf = eim.getMapFactory();
-	
-	
-    var map = mf.getMap(680000200);//wutt
-    //Lets make the clock continue through all maps xD
-    em.schedule("playerAltar", 3 * 60000);
-    eim.setProperty("hclicked", 0);
-    eim.setProperty("wclicked", 0);
-    eim.setProperty("entryTimestamp",System.currentTimeMillis() + (3 * 60000));
-	
+	em.schedule("timeOut",eim, 20*1000*60); // if the player doesnt start the wedding within 20mins(meaning, going into the altar) -> abort wedding.
+	mw = MapleWeddingManager.getCurrentWedding();
+	mw.setEventInstance(eim);
     return eim;
 }
 
-function afterSetup(eim) {}
-
 function playerEntry(eim, player) {
-    var map = eim.getMapInstance(680000200);
-    player.changeMap(map, map.getPortal(0));
-	
-    //1st - 20 min 2nd - 5 min 3rd 5 min xD
-    //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(1200));
-    //player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(180));
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock((Long.parseLong(eim.getProperty("entryTimestamp")) - System.currentTimeMillis()) / 1000));
+	if (mw.isWeddingCouple(player)){
+		player.changeMap(altarMap, altarMap.getPortal(2));
+	} else {
+		var map = eim.getMapInstance(680000200);
+		player.changeMap(map, map.getPortal(0));
+	}
+	player.getClient().getSession().write(MaplePacketCreator.getClock((weddingTime-(System.currentTimeMillis()/1000))));
 }
 
 //lets forget this bullshit...
 function playerDead(eim, player) {
+	playerExit(eim,player)
 }
 
 function playerRevive(eim, player) {
-//how the fuck can this happen? o.O
+	if(player.getMap().getId() == altarMap.getId() || player.getMap().getId() == cakeMap.getId())
+		player.getMap.getId == altarMap ? player.changeMap(altarMap) : player.changeMap(cakeMap);
 }
 
-function playerDisconnected(eim, player) {
+function playerDisconnected(eim, player) { // what if bride disconnected? need to check this.
     playerExit(eim, player);//kick him/her
 }
 
-function leftParty(eim, player) {	//this doesnt fucking matter...		
+function leftParty(eim, player) {	//??	
 }
 
 function disbandParty(eim) {
 }
 
-function playerUnregistered(eim, player) {}
+function startWed() {
+	em.cancelSchedule();
+	if(mw.start()) {
+		System.out.println("start wed");
+		em.schedule("playerCake", mw.getInstance(), (5 * 60 * 1000)); // warp to cake.
+		var eim = mw.getInstance();
+		System.out.println(eim.getPlayerCount());
+		if (eim.getPlayerCount() > 0) {
+			System.out.println("Player count > 0");
+			var pIter = eim.getPlayers().iterator();
+			while (pIter.hasNext()) {
+				player = pIter.next();
+				player.getClient().getSession().write(MaplePacketCreator.getClock(300));
+				System.out.println("startWed " + player.getName());
+			}
+		}
+	} else
+		timeOut();
+}
 
 function playerExit(eim, player) {
+	player.changeMap(exitMap, exitMap.getPortal(0));
     eim.unregisterPlayer(player);
-    player.changeMap(exitMap, exitMap.getPortal(0));
 }
 
 function playerWarpAltar(eim, player) {
-    if ((player.getName() != eim.getProperty("husband")) && (player.getName() != eim.getProperty("wife"))){
-        player.changeMap(altarMap, altarMap.getPortal(0));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
-    }else{
-        player.changeMap(altarMap, altarMap.getPortal(2));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
-        player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.serverNotice(6, "Please talk to High Priest John now!"));
-    }
+	mw.isWeddingCouple(player) ? player.changeMap(altarMap, altarMap.getPortal(2)) : player.changeMap(altarMap, altarMap.getPortal(0));
+	player.getClient().getSession().write(MaplePacketCreator.getClock(weddingTime - (System.currentTimeMillis()/1000)));
 }
 
 function playerWarpCake(eim, player) {
     player.changeMap(cakeMap, cakeMap.getPortal(0));
-    player.getClient().getSession().write(net.sf.odinms.tools.MaplePacketCreator.getClock(300));
+    player.getClient().getSession().write(MaplePacketCreator.getClock(60));
 }
 
-function playerAltar(eim, player) {
-    var iter = em.getInstances().iterator();
-    while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerWarpAltar(eim, pIter.next());
-            }
-        }
-        em.schedule("playerCake", 5 * 60000);
-    //eim.dispose();
+function playerCake() {
+    var eim = mw.getInstance();
+	em.cancelSchedule();
+    if (eim.getPlayerCount() > 0) {
+        var pIter = eim.getPlayers().iterator();
+		while (pIter.hasNext()) {
+			var player = pIter.next();
+			playerWarpCake(eim, player);
+		}
     }
-}
-
-function playerCake(eim, player) {
-    var iter = em.getInstances().iterator();
-    while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerWarpCake(eim, pIter.next());
-            }
-        }
-        em.schedule("timeOut", 5 * 60000);
-    //eim.dispose();
-    }
+    em.schedule("timeOut",mw.getInstance(), 60000); // 60 secs
 }
 
 //Those offline cuntts
@@ -159,33 +118,30 @@ function removePlayer(eim, player) {
     player.setMap(exitMap);
 }
 
-function clearPQ(eim) {
-    //Wedding? IDK about gifts o.O
-    var party = eim.getPlayers();
-    for (var i = 0; i < party.size(); i++) {
-        playerExit(eim, party.get(i));
-    }
-    eim.dispose();
+
+function cancelSchedule() {
 }
 
-function monsterKilled(mob, eim) {}
-
-function allMonstersDead(eim) {}
-
-function cancelSchedule() {}
-
 function timeOut() {
-    var iter = em.getInstances().iterator();
-    while (iter.hasNext()) {
-        var eim = iter.next();
-        if (eim.getPlayerCount() > 0) {
-            var pIter = eim.getPlayers().iterator();
-            while (pIter.hasNext()) {
-                playerExit(eim, pIter.next());
-            }
-        }
-        eim.dispose();
+	System.out.println("Got here");
+	var eim = mw.getInstance();
+	var player;
+	if (eim.getPlayerCount() > 0) {
+        var pIter = eim.getPlayers().iterator();
+		while (pIter.hasNext()) {
+			player = pIter.next();
+			playerExit(eim, player);
+			player.setEventInstance(null);
+		System.out.println("timeOut " + player.getName());
+		}
     }
+	MapleWeddingManager.end();
+}
+
+function openWedding() {
+	em.cancelSchedule();
+	weddingTime = (System.currentTimeMillis() + 20*1000*60)/1000;
+	em.schedule("startWed",mw.getInstance(), 10*1000*60);
 }
 
 
