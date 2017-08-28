@@ -46,24 +46,32 @@ public final class CommandProcessor {
     public static boolean isCommand(String s, MapleCharacter player){
         if(s.charAt(0) == '@')
             return true;
-        else if(player.gmLevel() > 0 && s.charAt(0) == '!')
+        else if (player.gmLevel() >= 1 && s.charAt(0) == '#')
+            return true;
+        else if(player.gmLevel() > 1 && s.charAt(0) == '!')
             return true;
         else
             return false;
     }
     public static void executeCommand(MapleClient c, String s){      
-       String[] words = s.split("\\s+");
-       Server srv = Server.getInstance();
-       Channel cserv = c.getChannelServer();
-       if(s.charAt(0) == '@')
-           PlayerCommands.executePlayerCommand(cserv, srv, c, words);
-       else if(c.getPlayer().gmLevel() > 0 && s.charAt(0) == '!'){
-           GMCommands.executeAdminCommand(cserv, srv, c, words);
-           GMCommands.executeGMCommand(cserv, srv, c, words);
-           GMCommands.executeInternCommand(cserv, srv, c, words);        
-           GMCommands.executeDonorCommand(cserv, srv, c, words);
-           System.out.print(" " + c.getPlayer().getName() + " has used " + words[0] + ". ");
-       }
+        String[] words = s.split("\\s+");
+        Server srv = Server.getInstance();
+        Channel cserv = c.getChannelServer();
+        if(s.charAt(0) == '@')
+        {
+            if (c.getPlayer().getMapId() == 109090200){
+                c.getPlayer().yellowMessage("Can't use commands here!");
+            }
+            else PlayerCommands.executePlayerCommand(cserv, srv, c, words);
+        }
+        else if (c.getPlayer().gmLevel() >= 1 && s.charAt(0) == '#')
+            DonorCommands.executeDonorCommand(cserv, srv, c, words);       
+        else if(c.getPlayer().gmLevel() > 1 && s.charAt(0) == '!'){
+            GMCommands.executeAdminCommand(cserv, srv, c, words);
+            GMCommands.executeGMCommand(cserv, srv, c, words);
+            GMCommands.executeInternCommand(cserv, srv, c, words);        
+            System.out.print(" " + c.getPlayer().getName() + " has used " + words[0] + ". ");
+        }
     }
     
     

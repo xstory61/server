@@ -167,7 +167,7 @@ public class MapleClient {
 		}
 		return chars;
 	}
-
+          
 	public List<String> loadCharacterNames(int serverId) {
 		List<String> chars = new ArrayList<>(15);
 		for (CharNameAndId cni : loadCharactersInternal(serverId)) {
@@ -908,6 +908,7 @@ public class MapleClient {
 	}
 
 	public boolean deleteCharacter(int cid) {
+            
                 try {
                         return MapleCharacter.deleteCharFromDB(MapleCharacter.loadCharFromDB(cid, this, false));
                 } catch(SQLException ex) {

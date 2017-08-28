@@ -302,7 +302,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int reborns;
     // Art edits
     private int jqpoints;
-
+    private int rbpoints;
+    private int epoints;
+    private int fpoints;
     private MapleCharacter() {
         useCS = false;
         
@@ -374,10 +376,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         ret.level = 1;
         ret.accountid = c.getAccID();
         ret.buddylist = new BuddyList(20);
-        ret.maplemount = null;
+        ret.maplemount = null;     
         // Art edits
         ret.jqpoints = 0;
-        //
+        ret.rbpoints = 0;
+        ret.epoints = 0;
+        ret.fpoints = 0;
         ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(24);
         ret.getInventory(MapleInventoryType.USE).setSlotLimit(24);
         ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(24);
@@ -4399,6 +4403,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ret.buddylist = new BuddyList(buddyCapacity);
             //Art edits
             ret.jqpoints = rs.getInt("jqpoints");
+            ret.rbpoints = rs.getInt("rbpoints");
+            ret.epoints = rs.getInt("epoints");
+            ret.fpoints = rs.getInt("fpoints");
             ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equipslots"));
             ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("useslots"));
             ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setupslots"));
@@ -5397,7 +5404,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             PreparedStatement ps;
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ?, jqpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, gachaexp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpMpUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, messengerid = ?, messengerposition = ?, mountlevel = ?, mountexp = ?, mounttiredness= ?, equipslots = ?, useslots = ?, setupslots = ?, etcslots = ?,  monsterbookcover = ?, vanquisherStage = ?, dojoPoints = ?, lastDojoStage = ?, finishedDojoTutorial = ?, vanquisherKills = ?, matchcardwins = ?, matchcardlosses = ?, matchcardties = ?, omokwins = ?, omoklosses = ?, omokties = ?, dataString = ?, fquest = ?, jailexpire = ?, reborns = ?, jqpoints = ?, rbpoints = ?, epoints = ?, fpoints = ? WHERE id = ?", Statement.RETURN_GENERATED_KEYS);
             if (gmLevel < 1 && level > 199) {
                 ps.setInt(1, isCygnus() ? 120 : 200);
             } else {
@@ -5494,7 +5501,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
             ps.setLong(50, jailExpiration);
             ps.setInt(51, reborns);
             ps.setInt(52, jqpoints);
-            ps.setInt(53, id);
+            ps.setInt(53, rbpoints);
+            ps.setInt(54, epoints);
+            ps.setInt(55, fpoints);
+            ps.setInt(56, id);
 
             int updateRows = ps.executeUpdate();
             if (updateRows < 1) {
@@ -5900,6 +5910,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.setLevel(1);
         this.updateSingleStat(MapleStat.LEVEL, 1);
+        this.reborns += 1;
+        this.rbpoints += 1;
         this.dropMessage(5,"Congratulations! You now have " + reborns + " rebirths.");
     }
     public int getRebirths(){
@@ -5950,6 +5962,41 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     
     public void addJQPoints(byte pts){
         this.jqpoints += pts;
+    }
+  
+    public int getRbPoints(){
+        return rbpoints;
+    }
+    
+    public void setRbPoints(byte amt){
+        this.rbpoints = amt;
+    }
+    
+    public void addRbPoints(byte pts){
+        this.rbpoints += pts;
+    }    
+   
+    public int getEPoints(){
+        return epoints;
+    }
+    
+    public void setEPoints(byte amt){
+        this.epoints = amt;
+    }
+    
+    public void addEPoints(byte pts){
+        this.epoints += pts;
+    }
+    public int getFPoints(){
+        return fpoints;
+    }
+    
+    public void setFPoints(byte amt){
+        this.fpoints = amt;
+    }
+    
+    public void addFPoints(byte pts){
+        this.fpoints += pts;
     }
     // end
 

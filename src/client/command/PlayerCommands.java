@@ -57,7 +57,7 @@ import tools.StringUtil;
         "Do not say 'I have a bug to report', just state it.",
     };
     //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="BGM ">
+    //<editor-fold defaultstate="collapsed" desc="BGM">
     private static String[] songs = {
         "Jukebox/Congratulation",
         "Bgm00/SleepyWood",
@@ -259,29 +259,29 @@ import tools.StringUtil;
     public static boolean executePlayerCommand(Channel cserv, Server srv, MapleClient c, String[] sub){
         MapleCharacter player = c.getPlayer();
         String choice = sub[0].substring(1); 
-        switch(choice) {
-            //<editor-fold defaultstate="collapsed" desc="Help command">
+        switch(choice.toLowerCase()) {
+            //<editor-fold defaultstate="collapsed" desc="help">
             case "help":
             case "commands":
             case "playercommands":
                 c.getAbstractPlayerInteraction().openNpc(9201143, "commands");
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Time command">
+            //<editor-fold defaultstate="collapsed" desc="time">
             case "time":
                 DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+3"));
                 player.yellowMessage("Interstellar Server Time: " + dateFormat.format(new Date()));
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Staff command">
+            //<editor-fold defaultstate="collapsed" desc="staff">
             case "staff":
                 player.yellowMessage("Art");
                 player.yellowMessage("Alyschu");
                 player.yellowMessage("Iced");
                 break;
             //</editor-fold>       
-            //<editor-fold defaultstate="collapsed" desc="Chalkboard command">
+            //<editor-fold defaultstate="collapsed" desc="chalkboard">
             case "chalkboard":
             case "chalktalk":
             case "chalk":
@@ -299,7 +299,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold> 
-            //<editor-fold defaultstate="collapsed" desc="Up time command">
+            //<editor-fold defaultstate="collapsed" desc="lastrestart">
             case "lastrestart":
             case "uptime":
                 long milliseconds = System.currentTimeMillis() - Server.uptime;
@@ -310,20 +310,20 @@ import tools.StringUtil;
                 player.yellowMessage("Server has been online for " + days + " days " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Emo command">
+            //<editor-fold defaultstate="collapsed" desc="emo">
             case "emo":
                 player.setHp(0);
                 player.updateSingleStat(MapleStat.HP, 0);
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Dropinv command">
+            //<editor-fold defaultstate="collapsed" desc="dropinv">
             case "dropinv":
                 for (int i = 0; i < player.getInventory(MapleInventoryType.EQUIP).getSlotLimit() + 1; i++) {
                     MapleInventoryManipulator.drop(c, MapleInventoryType.EQUIP, (short) i, (short) 1);
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Randlook command">
+            //<editor-fold defaultstate="collapsed" desc="randlook">
             case "randlook":
                 for (int i = -24; i < 0; i++) {
                     if (i != -11) {
@@ -343,10 +343,10 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Smega command">
+            //<editor-fold defaultstate="collapsed" desc="smega">
             case "s":
             case "smega":                  
-                //<editor-fold defaultstate="collapsed" desc="Old smega command">
+                //<editor-fold defaultstate="collapsed" desc="old smega">
                 /*
                 if (sub.length > 1){
                     if (!c.isJailed(c) && !player.isMuted() && !player.isPermmute()){
@@ -418,7 +418,7 @@ import tools.StringUtil;
                     player.dropMessage(5,"You have no smega!");
                 break;
                 //</editor-fold>          
-            //<editor-fold defaultstate="collapsed" desc="Gacha command (Out of function)">
+            //<editor-fold defaultstate="collapsed" desc="gacha (Out of function)">
              /*
              case "gacha":
                 MapleGachapon.Gachapon gacha = null;
@@ -451,7 +451,7 @@ import tools.StringUtil;
             */
             //</editor-fold>             
             //<editor-fold defaultstate="collapsed" desc="NPCs">
-            //<editor-fold defaultstate="collapsed" desc="Job command">
+            //<editor-fold defaultstate="collapsed" desc="job">
             case "job": // Job Advancer
                 NPCScriptManager.getInstance().start(c, 2012022, null, null);
                 break;
@@ -495,7 +495,7 @@ import tools.StringUtil;
                 */
                 //</editor-fold>
             //</editor-fold>       
-            //<editor-fold defaultstate="collapsed" desc="fm command">
+            //<editor-fold defaultstate="collapsed" desc="fm">
             case "fm":
                 if (sub.length > 1) {
                     if (Integer.parseInt(sub[1]) >= 1 && Integer.parseInt(sub[1]) <= 22) {
@@ -508,13 +508,13 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="expfix command">
+            //<editor-fold defaultstate="collapsed" desc="expfix">
             case "expfix":
                 player.setExp(0);
                 player.updateSingleStat(MapleStat.EXP, 0);
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="maxskills command">
+            //<editor-fold defaultstate="collapsed" desc="maxskills">
             case "maxskills":
                 for (MapleData skill_ : MapleDataProviderFactory.getDataProvider(new File(System.getProperty("wzpath") + "/" + "String.wz")).getData("Skill.img").getChildren()) {
                     try {
@@ -550,7 +550,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="rebirth command">
+            //<editor-fold defaultstate="collapsed" desc="rebirth">
             case "rebirth":
             case "reborn":
             case "rb":
@@ -579,12 +579,12 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="home command">
+            //<editor-fold defaultstate="collapsed" desc="home">
             case "home":
                  player.changeMap(910000000);
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="str/dex/int/luk command">
+            //<editor-fold defaultstate="collapsed" desc="str/dex/int/luk">
             case "str":
             case "dex":
             case "int":
@@ -636,8 +636,8 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Social commands">
-            //<editor-fold defaultstate="collapsed" desc="highfive command">
+            //<editor-fold defaultstate="collapsed" desc="Social command">
+            //<editor-fold defaultstate="collapsed" desc="highfive">
             case "highfive":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -658,7 +658,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="rape command (hey look its 666's line F3">
+            //<editor-fold defaultstate="collapsed" desc="rape (hey look its 666's line F3">
             case "rape":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -679,7 +679,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="kiss command">
+            //<editor-fold defaultstate="collapsed" desc="kiss">
             case "kiss":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -700,7 +700,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="fuck command">
+            //<editor-fold defaultstate="collapsed" desc="fuck">
             case "fuck":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -721,7 +721,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="slap command">
+            //<editor-fold defaultstate="collapsed" desc="slap">
             case "slap":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -742,7 +742,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="dickslap command">
+            //<editor-fold defaultstate="collapsed" desc="dickslap">
             case "dickslap":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -763,7 +763,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="kick command">
+            //<editor-fold defaultstate="collapsed" desc="kick">
             case "kick":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -784,7 +784,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="bite command">
+            //<editor-fold defaultstate="collapsed" desc="bite">
              case "bite":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -805,7 +805,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="punch command">
+            //<editor-fold defaultstate="collapsed" desc="punch">
             case "punch":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -826,7 +826,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="yell command">
+            //<editor-fold defaultstate="collapsed" desc="yell">
             case "yell":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -847,7 +847,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="hug command">
+            //<editor-fold defaultstate="collapsed" desc="hug">
             case "hug":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -868,7 +868,7 @@ import tools.StringUtil;
                 }
                  break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="poke command">
+            //<editor-fold defaultstate="collapsed" desc="poke">
             case "poke":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -889,7 +889,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="choke command">
+            //<editor-fold defaultstate="collapsed" desc="choke">
              case "choke":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -910,7 +910,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="stare command">
+            //<editor-fold defaultstate="collapsed" desc="stare">
             case "stare":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -931,7 +931,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="spank command">
+            //<editor-fold defaultstate="collapsed" desc="spank">
             case "spank":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -952,7 +952,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="touch command">
+            //<editor-fold defaultstate="collapsed" desc="touch">
             case "touch":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -973,7 +973,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="harass commands">
+            //<editor-fold defaultstate="collapsed" desc="harass">
             case "harass":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -994,7 +994,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="cheer command">
+            //<editor-fold defaultstate="collapsed" desc="cheer">
             case "cheer":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1015,7 +1015,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="spit command">
+            //<editor-fold defaultstate="collapsed" desc="spit">
             case "spit":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1036,7 +1036,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="weed command">
+            //<editor-fold defaultstate="collapsed" desc="weed">
             case "weed":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1057,7 +1057,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="pat command">
+            //<editor-fold defaultstate="collapsed" desc="pat">
             case "pat":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1078,7 +1078,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="smack command">
+            //<editor-fold defaultstate="collapsed" desc="smack">
             case "smack":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1099,7 +1099,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="wave command">
+            //<editor-fold defaultstate="collapsed" desc="wave">
             case "wave":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1120,7 +1120,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="buttfuck command">
+            //<editor-fold defaultstate="collapsed" desc="buttfuck">
             case "buttfuck":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1141,7 +1141,7 @@ import tools.StringUtil;
                 }
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="smile command">
+            //<editor-fold defaultstate="collapsed" desc="smile">
             case "smile":
                 if (sub.length > 1) {
                     MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(sub[1]);
@@ -1163,12 +1163,12 @@ import tools.StringUtil;
                 break;
             //</editor-fold>
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="save command">
+            //<editor-fold defaultstate="collapsed" desc="save">
             case "save":
                 player.saveToDB();
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="whatdropfrom command (out of function)">
+            //<editor-fold defaultstate="collapsed" desc="whatdropfrom (out of function)">
              /*
             case "whatdropsfrom":
                 String output = "";
@@ -1206,7 +1206,7 @@ import tools.StringUtil;
                 break;
             */
             //</editor-fold>                  
-            //<editor-fold defaultstate="collapsed" desc="whodrops command">
+            //<editor-fold defaultstate="collapsed" desc="whodrops">
                 case "whodrops":
                     if (sub.length < 2) {
                         player.dropMessage(5, "Please do @whodrops <item name>");
@@ -1247,7 +1247,7 @@ import tools.StringUtil;
                     c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
                     break;
 //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="dispose command">
+            //<editor-fold defaultstate="collapsed" desc="dispose">
             case "dispose":
                 NPCScriptManager.getInstance().dispose(c);
                 c.announce(MaplePacketCreator.enableActions());
@@ -1255,19 +1255,19 @@ import tools.StringUtil;
                 player.message("You've been disposed.");
                 break;
             //</editor-fold>       
-            //<editor-fold defaultstate="collapsed" desc="equiplv command">
+            //<editor-fold defaultstate="collapsed" desc="equiplv">
             case "equiplv":
                 player.showAllEquipFeatures();
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="go command">
+            //<editor-fold defaultstate="collapsed" desc="go">
             case "go":
                 if(sub.length > 1)
                     if(gotomaps.containsKey(sub[1]))
                         player.changeMap(gotomaps.get(sub[1]));
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="rates command">
+            //<editor-fold defaultstate="collapsed" desc="rates">
             case "rates":
                 player.yellowMessage("BOSSDROP RATE");
                 player.message(">>Total BOSSDROP Rate: " + c.getWorldServer().getBossDropRate() + "x");
@@ -1295,7 +1295,7 @@ import tools.StringUtil;
                 player.message(">>Total EXP Rate: " + player.getExpRate() + "x");
                 break;
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="online2 command">
+            //<editor-fold defaultstate="collapsed" desc="online2">
             case "online2":
                 String text = "Online Players : ";
                 String cc1 = "Players in Channel 1: ",
@@ -1331,7 +1331,7 @@ import tools.StringUtil;
                 player.dropMessage(6, cc3);
                 break;
             //</editor-fold>         
-            //<editor-fold defaultstate="collapsed" desc="online command">
+            //<editor-fold defaultstate="collapsed" desc="online">
                 case "online":
                     int allplayers = 0;
                     for (MapleCharacter chrs : c.getWorldServer().getPlayerStorage().getAllCharacters()) {
@@ -1354,7 +1354,7 @@ import tools.StringUtil;
                     }
                     break;
             //</editor-fold>                 
-            //<editor-fold defaultstate="collapsed" desc="gm command">
+            //<editor-fold defaultstate="collapsed" desc="gm">
             case "gm":
                 if (sub.length < 3) { // #goodbye 'hi'
                      player.dropMessage(5, "Your message was too short. Please provide as much detail as possible.");
@@ -1372,7 +1372,7 @@ import tools.StringUtil;
                 player.getAutobanManager().spam(8);
                 break;
             //</editor-fold>            
-            //<editor-fold defaultstate="collapsed" desc="points command (out of function)">
+            //<editor-fold defaultstate="collapsed" desc="points (out of function)">
             /*
             case "points":
                 player.dropMessage(5, "You have " + c.getVotePoints() + " vote point(s).");
@@ -1389,7 +1389,7 @@ import tools.StringUtil;
                 break;
             */
             //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="bosshp command">
+            //<editor-fold defaultstate="collapsed" desc="bosshp">
                 case "bosshp":
                     for(MapleMonster monster : player.getMap().getMonsters()) {
                         if(monster != null && monster.isBoss() && monster.getHp() > 0) {
@@ -1405,7 +1405,7 @@ import tools.StringUtil;
                     }
                     break;
             //</editor-fold>    
-            //<editor-fold defaultstate="collapsed" desc="ranks command">
+            //<editor-fold defaultstate="collapsed" desc="ranks">
             case "ranks":
                 PreparedStatement ps = null;
                 ResultSet rs = null;
@@ -1429,6 +1429,18 @@ import tools.StringUtil;
                         e.printStackTrace();
                     }
                 }
+                break;
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="stats">
+            case "stats":
+                player.message("================================");
+                player.message("\t\t\t\t\t\t\t\tStats");
+                player.message("================================");
+                player.message("Event Points: " + player.getClient().getVotePoints() + "\t\t Vote Points: " + player.getEPoints());
+                player.message("Rebirth Points: " + player.getRbPoints() + "\t\t Reborns: " + player.getRebirths());
+                player.message("Fishing Points: " + player.getFPoints() + "\t\t NX: " + player.getCashShop().getCash(1));
+                player.message ("\t\t\tJump Quest Points: " + player.getJQPoints());
+                player.message("================================");
                 break;
             //</editor-fold>
             default:
