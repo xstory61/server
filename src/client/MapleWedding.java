@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import client.MapleClient;
 import scripting.event.EventInstanceManager;
 import scripting.npc.NPCScriptManager;
 import server.TimerManager;
@@ -17,6 +17,7 @@ import tools.WeddingPackets;
  */
 
 public class MapleWedding {
+        private MapleClient cl;
 	private MapleCharacter groom;
 	private MapleCharacter bride;
 	private List<Integer> guests; 
@@ -113,7 +114,7 @@ public class MapleWedding {
 			    		System.out.println(chr.getName() +" Stage: " + npc_stage.get(chr.getId()));
 				    	
 				    	if(chr.getClient().getCM() == null) {
-				    		NPCScriptManager.getInstance().start(chr.getClient(), 9201002);
+				    		NPCScriptManager.getInstance().start(chr.getClient(), 9201002, chr.getClient().getPlayer());
 				    	}
 			    	}
 				}

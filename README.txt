@@ -1,4 +1,24 @@
 Update list by: Art
+
+Date 08/29/2017
+
+Added:
+	!oxmap
+	!minigame
+	!bomberman
+	!rlglm <number> (1,2)
+	@stats
+	Delete Character NPC 1052005
+	
+Edited:
+	MapleWedding.java (incase doesnt work line 117 I had no chance to test it cause of SQL)
+
+
+
+
+
+
+
 Date: 08/28/2017
 
 
@@ -29,6 +49,7 @@ Date: 08/28/2017
 - Interns are not allowed to use !deleteitem and !dropinv (Admins only)
 - GMs are able to itemvac now
 - Disabled player commands in tutorial map (109090200)
+- Added @stats/ @checkme
 
 - And some more I forgot about
 

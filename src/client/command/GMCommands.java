@@ -1247,9 +1247,11 @@ public class GMCommands {
                 SkillFactory.getSkill(9101004).getEffect(SkillFactory.getSkill(9101004).getMaxLevel()).applyTo(player);
                 break;
             //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="oxmap">
             case "oxmap":
                 player.changeMap(109020001);
                 break;
+            //</editor-fold>
             case "minigame":
                 player.changeMap(109070000);
                 break;
