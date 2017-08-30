@@ -278,6 +278,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getClient().getVotePoints();
     }
     
+    public void deleteChar(int cid){
+        getClient().deleteCharacter(cid);
+    }
+    
     public void showEffect(String effect) {
         getPlayer().getMap().broadcastMessage(MaplePacketCreator.environmentChange(effect, 3));
     }
