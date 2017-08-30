@@ -157,85 +157,85 @@ public class MapleClient {
 	}
 
 	public List<MapleCharacter> loadCharacters(int serverId) {
-		List<MapleCharacter> chars = new ArrayList<>(15);
-		try {
-			for (CharNameAndId cni : loadCharactersInternal(serverId)) {
-				chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
-			}
-		} catch (Exception e) {
-                    e.printStackTrace();
-		}
-		return chars;
+            List<MapleCharacter> chars = new ArrayList<>(15);
+            try {
+                for (CharNameAndId cni : loadCharactersInternal(serverId)) {
+                    chars.add(MapleCharacter.loadCharFromDB(cni.id, this, false));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return chars;
 	}
           
 	public List<String> loadCharacterNames(int serverId) {
-		List<String> chars = new ArrayList<>(15);
-		for (CharNameAndId cni : loadCharactersInternal(serverId)) {
-			chars.add(cni.name);
-		}
-		return chars;
+            List<String> chars = new ArrayList<>(15);
+            for (CharNameAndId cni : loadCharactersInternal(serverId)) {
+                chars.add(cni.name);
+            }
+            return chars;
 	}
 
 	private List<CharNameAndId> loadCharactersInternal(int serverId) {
-		PreparedStatement ps;
-		List<CharNameAndId> chars = new ArrayList<>(15);
-		try {
-			ps = DatabaseConnection.getConnection().prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
-			ps.setInt(1, this.getAccID());
-			ps.setInt(2, serverId);
-			try (ResultSet rs = ps.executeQuery()) {
-				while (rs.next()) {
-					chars.add(new CharNameAndId(rs.getString("name"), rs.getInt("id")));
-				}
-			}
-			ps.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return chars;
+            PreparedStatement ps;
+            List<CharNameAndId> chars = new ArrayList<>(15);
+            try {
+                ps = DatabaseConnection.getConnection().prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
+                ps.setInt(1, this.getAccID());
+                ps.setInt(2, serverId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        chars.add(new CharNameAndId(rs.getString("name"), rs.getInt("id")));
+                    }
+                }
+                ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return chars;
 	}
 
 	public boolean isLoggedIn() {
-		return loggedIn;
+            return loggedIn;
 	}
 
 	public boolean hasBannedIP() {
-		boolean ret = false;
-		try {
-			try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM ipbans WHERE ? LIKE CONCAT(ip, '%')")) {
-				ps.setString(1, session.getRemoteAddress().toString());
-				try (ResultSet rs = ps.executeQuery()) {
-					rs.next();
-					if (rs.getInt(1) > 0) {
-						ret = true;
-					}
-				}
-			}
-		} catch (SQLException e) {
-                    e.printStackTrace();
-		}
-		return ret;
+            boolean ret = false;
+            try {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM ipbans WHERE ? LIKE CONCAT(ip, '%')")) {
+                    ps.setString(1, session.getRemoteAddress().toString());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        if (rs.getInt(1) > 0) {
+                            ret = true;
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return ret;
 	}
 
 	public int getVoteTime(){
-		if (voteTime != -1){
-			return voteTime;
-		}
-		try {
-			try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT date FROM bit_votingrecords WHERE UPPER(account) = UPPER(?)")) {
-				ps.setString(1, accountName);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (!rs.next()) {
-						return -1;
-					}
-					voteTime = rs.getInt("date");
-				}
-			}
-		} catch (SQLException e) {
-			FilePrinter.printError("hasVotedAlready.txt", e);
-			return -1;
-		}
-		return voteTime;
+            if (voteTime != -1){
+                return voteTime;
+            }
+            try {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT date FROM bit_votingrecords WHERE UPPER(account) = UPPER(?)")) {
+                    ps.setString(1, accountName);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            return -1;
+                        }
+                        voteTime = rs.getInt("date");
+                    }
+                }
+            } catch (SQLException e) {
+                FilePrinter.printError("hasVotedAlready.txt", e);
+                return -1;
+            }
+            return voteTime;
 	}
         
         public void resetVoteTime() {
@@ -243,179 +243,177 @@ public class MapleClient {
         }
 
 	public boolean hasVotedAlready(){
-		Date currentDate = new Date();
-		int timeNow = (int) (currentDate.getTime() / 1000);
-		int difference = (timeNow - getVoteTime());
-		return difference < 86400 && difference > 0;
+            Date currentDate = new Date();
+            int timeNow = (int) (currentDate.getTime() / 1000);
+            int difference = (timeNow - getVoteTime());
+            return difference < 86400 && difference > 0;
 	}
 	
 	public boolean hasBannedHWID() {
-		if(hwid == null)
-			return false;
-		
-		boolean ret = false;
-		PreparedStatement ps = null;
-		try {
-			ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM hwidbans WHERE hwid LIKE ?");
-			ps.setString(1, hwid);
-			ResultSet rs = ps.executeQuery();
-			if(rs != null && rs.next()) {
-				if(rs.getInt(1) > 0) 
-					ret = true; 
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(ps != null && !ps.isClosed()) {
-					ps.close();
-				}
-			} catch (SQLException e){
-                            e.printStackTrace();
-			}
-		}
-		
-		return ret;
+            if(hwid == null)
+                return false;
+            boolean ret = false;
+            PreparedStatement ps = null;
+            try {
+                ps = DatabaseConnection.getConnection().prepareStatement("SELECT COUNT(*) FROM hwidbans WHERE hwid LIKE ?");
+                ps.setString(1, hwid);
+                ResultSet rs = ps.executeQuery();
+                if(rs != null && rs.next()) {
+                    if(rs.getInt(1) > 0) 
+                        ret = true; 
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if(ps != null && !ps.isClosed()) {
+                        ps.close();
+                    }
+                } catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
+            return ret;
 	}
 
 	public boolean hasBannedMac() {
-		if (macs.isEmpty()) {
-			return false;
-		}
-		boolean ret = false;
-		int i;
-		try {
-			StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM macbans WHERE mac IN (");
-			for (i = 0; i < macs.size(); i++) {
-				sql.append("?");
-				if (i != macs.size() - 1) {
-					sql.append(", ");
-				}
-			}
-			sql.append(")");
-			try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
-				i = 0;
-				for (String mac : macs) {
-					i++;
-					ps.setString(i, mac);
-				}
-				try (ResultSet rs = ps.executeQuery()) {
-					rs.next();
-					if (rs.getInt(1) > 0) {
-						ret = true;
-					}
-				}
-			}
-		} catch (Exception e) {
-                    e.printStackTrace();
-		}
-		return ret;
+            if (macs.isEmpty()) {
+                return false;
+            }
+            boolean ret = false;
+            int i;
+            try {
+                StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM macbans WHERE mac IN (");
+                for (i = 0; i < macs.size(); i++) {
+                    sql.append("?");
+                    if (i != macs.size() - 1) {
+                        sql.append(", ");
+                    }
+                }
+                sql.append(")");
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql.toString())) {
+                    i = 0;
+                    for (String mac : macs) {
+                        i++;
+                        ps.setString(i, mac);
+                    }
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        if (rs.getInt(1) > 0) {
+                            ret = true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return ret;
 	}
 	
 	private void loadHWIDIfNescessary() throws SQLException {
-		if(hwid == null) {
-			try(PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT hwid FROM accounts WHERE id = ?")) {
-				ps.setInt(1, accId);
-				try(ResultSet rs = ps.executeQuery()) {
-					if(rs.next()) {
-						hwid = rs.getString("hwid");
-					}
-				}
-			}
-		}
+            if(hwid == null) {
+                try(PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT hwid FROM accounts WHERE id = ?")) {
+                    ps.setInt(1, accId);
+                    try(ResultSet rs = ps.executeQuery()) {
+                        if(rs.next()) {
+                            hwid = rs.getString("hwid");
+                        }
+                    }
+                }
+            }
 	}
 
 	// TODO: Recode to close statements...
 	private void loadMacsIfNescessary() throws SQLException {
-		if (macs.isEmpty()) {
-			try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT macs FROM accounts WHERE id = ?")) {
-				ps.setInt(1, accId);
-				try (ResultSet rs = ps.executeQuery()) {
-					if (rs.next()) {
-						for (String mac : rs.getString("macs").split(", ")) {
-							if (!mac.equals("")) {
-								macs.add(mac);
-							}
-						}
-					}
-				}
-			}
-		}
+            if (macs.isEmpty()) {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT macs FROM accounts WHERE id = ?")) {
+                    ps.setInt(1, accId);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            for (String mac : rs.getString("macs").split(", ")) {
+                                if (!mac.equals("")) {
+                                    macs.add(mac);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 	}
 	
 	public void banHWID() {
-		Connection con = DatabaseConnection.getConnection();
-		PreparedStatement ps = null;
-		try {
-			loadHWIDIfNescessary();
-			ps = con.prepareStatement("INSERT INTO hwidbans (hwid) VALUES (?)");
-			ps.setString(1, hwid);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(ps != null && !ps.isClosed())
-					ps.close();
-			} catch (SQLException e) {
-                            e.printStackTrace();
-			}
-		}
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = null;
+            try {
+                loadHWIDIfNescessary();
+                ps = con.prepareStatement("INSERT INTO hwidbans (hwid) VALUES (?)");
+                ps.setString(1, hwid);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if(ps != null && !ps.isClosed())
+                        ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
 	}
 
 	public void banMacs() {
-		Connection con = DatabaseConnection.getConnection();
-		try {
-			loadMacsIfNescessary();
-			List<String> filtered = new LinkedList<>();
-			try (PreparedStatement ps = con.prepareStatement("SELECT filter FROM macfilters"); ResultSet rs = ps.executeQuery()) {
-				while (rs.next()) {
-					filtered.add(rs.getString("filter"));
-				}
-			}
-			try (PreparedStatement ps = con.prepareStatement("INSERT INTO macbans (mac, aid) VALUES (?, ?)")) {
-				for (String mac : macs) {
-					boolean matched = false;
-					for (String filter : filtered) {
-						if (mac.matches(filter)) {
-							matched = true;
-							break;
-						}
-					}
-					if (!matched) {
-						ps.setString(1, mac);
-                                                ps.setString(2, String.valueOf(getAccID()));
-						ps.executeUpdate();
-					}
-				}
-			}
-		} catch (SQLException e) {
-                    e.printStackTrace();
-		}
+            Connection con = DatabaseConnection.getConnection();
+            try {
+                loadMacsIfNescessary();
+                List<String> filtered = new LinkedList<>();
+                try (PreparedStatement ps = con.prepareStatement("SELECT filter FROM macfilters"); ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        filtered.add(rs.getString("filter"));
+                    }
+                }
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO macbans (mac, aid) VALUES (?, ?)")) {
+                    for (String mac : macs) {
+                        boolean matched = false;
+                        for (String filter : filtered) {
+                            if (mac.matches(filter)) {
+                                matched = true;
+                                break;
+                            }
+                        }
+                        if (!matched) {
+                            ps.setString(1, mac);
+                            ps.setString(2, String.valueOf(getAccID()));
+                            ps.executeUpdate();
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 	}
 
 	public int finishLogin() {
-		synchronized (MapleClient.class) {
-			if (getLoginState() > LOGIN_NOTLOGGEDIN) { // 0 = LOGIN_NOTLOGGEDIN, 1= LOGIN_SERVER_TRANSITION, 2 = LOGIN_LOGGEDIN
-				loggedIn = false;
-				return 7;
-			}
-			updateLoginState(LOGIN_LOGGEDIN);
-		}
-		return 0;
+            synchronized (MapleClient.class) {
+                if (getLoginState() > LOGIN_NOTLOGGEDIN) { // 0 = LOGIN_NOTLOGGEDIN, 1= LOGIN_SERVER_TRANSITION, 2 = LOGIN_LOGGEDIN
+                    loggedIn = false;
+                    return 7;
+                }
+                updateLoginState(LOGIN_LOGGEDIN);
+            }
+            return 0;
 	}
 
 	public void setPin(String pin) {
-		this.pin = pin;
-		try {
-			try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET pin = ? WHERE id = ?")) {
-				ps.setString(1, pin);
-				ps.setInt(2, accId);
-				ps.executeUpdate();
-			}
-		} catch (SQLException e) {
-                    e.printStackTrace();
-		}
+            this.pin = pin;
+            try {
+                try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET pin = ? WHERE id = ?")) {
+                    ps.setString(1, pin);
+                    ps.setInt(2, accId);
+                    ps.executeUpdate();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 	}
 
 	public String getPin() {

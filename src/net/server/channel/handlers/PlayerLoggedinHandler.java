@@ -265,15 +265,21 @@ public final class PlayerLoggedinHandler extends AbstractMaplePacketHandler {
             }
                     */
             if (player.isGM()){
-            	Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("GM " + player.getName() + " has logged in"));
+                if (player.gmLevel() == 2){
+                    Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("Intern " + player.getName() + " has logged in"));
+                }
+                if (player.gmLevel() == 3){
+                    Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("GM " + player.getName() + " has logged in"));
+                }
+                if (player.gmLevel() == 4){
+                    Server.getInstance().broadcastGMMessage(MaplePacketCreator.earnTitleMessage("Admin " + player.getName() + " has logged in"));
+                }
             }
             
         }
         
-        if (player.getMap().getHPDec() > 0) player.resetHpDecreaseTask();
-        
+        if (player.getMap().getHPDec() > 0) player.resetHpDecreaseTask();  
         player.resetPlayerRates();
-        
         if(ServerConstants.USE_ADD_RATES_BY_LEVEL == true) player.setPlayerRates();
         player.setWorldRates();
         player.updateCouponRates();

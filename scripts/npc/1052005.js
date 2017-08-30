@@ -6,7 +6,7 @@
 	Description: 	Delete Character
 */
 
-var status = 0;
+var status;
 var info;
 var text;
 var i;
@@ -49,7 +49,8 @@ function action(mode, type, sel) {
             if (sel > 0) selectedCharacter = cm.getClient().loadCharacters(cm.getClient().getWorld()).get(sel - 1);
             info = sel;
         }
-    }else if (status == 2)
+    }
+	else if (status == 2)
     {
         if (info == 0)
         {

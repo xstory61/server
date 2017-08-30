@@ -266,7 +266,7 @@ import tools.StringUtil;
             case "playercommands":
                 c.getAbstractPlayerInteraction().openNpc(9201143, "commands");
                 break;
-            //</editor-fold>
+            //</editor-fold+->
             //<editor-fold defaultstate="collapsed" desc="time">
             case "time":
                 DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -317,7 +317,7 @@ import tools.StringUtil;
                 break;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="dropinv">
-            case "dropinv":
+            case "dropeq":
                 for (int i = 0; i < player.getInventory(MapleInventoryType.EQUIP).getSlotLimit() + 1; i++) {
                     MapleInventoryManipulator.drop(c, MapleInventoryType.EQUIP, (short) i, (short) 1);
                 }
@@ -408,48 +408,22 @@ import tools.StringUtil;
                     player.dropMessage(5, "Error. Please type out a message.");
                 }
                 */
-                //</editor-fold>                 
-                if(player.getInventory(MapleInventoryType.CASH).findById(5072000) != null){
-                    String text = StringUtil.joinStringFrom(sub, 1);
-                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + text, true));
-                    MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5072000, (short) 1, false, true);
-                }
-                else
-                    player.dropMessage(5,"You have no smega!");
+                //</editor-fold>  
+                String text = StringUtil.joinStringFrom(sub, 1);
+                if (!player.isMuted() && !player.getMap().isMuted()){
+                    if(player.getInventory(MapleInventoryType.CASH).findById(5072000) != null)
+                    {
+                        Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + text, true));
+                        MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5072000, (short) 1, false, true);
+                        break;
+                        
+                    } else {
+                        player.dropMessage(5,"You have no smega!");
+                        break;
+                    } 
+                } else player.dropMessage(5,"You are muted!");
                 break;
-                //</editor-fold>          
-            //<editor-fold defaultstate="collapsed" desc="gacha (Out of function)">
-             /*
-             case "gacha":
-                MapleGachapon.Gachapon gacha = null;
-                String search = StringUtil.joinStringFrom(sub, 1);
-                String gachaName = "";
-                String [] names = {"Henesys", "Ellinia", "Perion", "Kerning City", "Sleepywood", "Mushroom Shrine", "Showa Spa Male", "Showa Spa Female", "New Leaf City", "Nautilus Harbor"};
-                int [] ids = {9100100, 9100101, 9100102, 9100103, 9100104, 9100105, 9100106, 9100107, 9100109, 9100117};
-                for (int i = 0; i < names.length; i++){
-                    if (search.equalsIgnoreCase(names[i])){
-                        gachaName = names[i];
-                        gacha = MapleGachapon.Gachapon.getByNpcId(ids[i]);
-                    }
-                }
-                if (gacha == null){
-                    player.yellowMessage("Please use @gacha <name> where name corresponds to one of the below:");
-                    for (String name : names){
-                        player.yellowMessage(name);
-                    }
-                    break;
-                }
-                String output = "The #b" + gachaName + "#k Gachapon contains the following items.\r\n\r\n";
-                for (int i = 0; i < 2; i++){
-                    for (int id : gacha.getItems(i)){
-                        output += "-" + MapleItemInformationProvider.getInstance().getName(id) + "\r\n";
-                    }
-                }
-                output += "\r\nPlease keep in mind that there are items that are in all gachapons and are not listed here.";
-                c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
-                break;
-            */
-            //</editor-fold>             
+                //</editor-fold>                     
             //<editor-fold defaultstate="collapsed" desc="NPCs">
             //<editor-fold defaultstate="collapsed" desc="job">
             case "job": // Job Advancer
@@ -554,9 +528,6 @@ import tools.StringUtil;
             case "rebirth":
             case "reborn":
             case "rb":
-            case "rebirthe":
-            case "reborne":
-            case "rbe":
             case "rebirthc":
             case "rebornc":
             case "rbc":
@@ -1167,45 +1138,7 @@ import tools.StringUtil;
             case "save":
                 player.saveToDB();
                 break;
-            //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="whatdropfrom (out of function)">
-             /*
-            case "whatdropsfrom":
-                String output = "";
-                if (sub.length < 2) {
-                    player.dropMessage(5, "Please do @whatdropsfrom <monster name>");
-                    break;
-                }
-                String monsterName = StringUtil.joinStringFrom(sub, 1);
-                output = "";
-                int limit = 3;
-                Iterator<Pair<Integer, String>> listIterator = MapleMonsterInformationProvider.getMobsIDsFromName(monsterName).iterator();
-                for (int i = 0; i < limit; i++) {
-                    if(listIterator.hasNext()) {
-                        Pair<Integer, String> data = listIterator.next();
-                        int mobId = data.getLeft();
-                        String mobName = data.getRight();
-                        output += mobName + " drops the following items:\r\n\r\n";
-                        for (MonsterDropEntry drop : MapleMonsterInformationProvider.getInstance().retrieveDrop(mobId)){
-                            try {
-                                String name = MapleItemInformationProvider.getInstance().getName(drop.itemId);
-                                if (name.equals("null") || drop.chance == 0){
-                                    continue;
-                                }
-                                float chance = 1000000 / drop.chance / player.getDropRate();
-                                output += "- " + name + " (1/" + (int) chance + ")\r\n";
-                            } catch (Exception ex){
-                                ex.printStackTrace();
-                                continue;
-                            }
-                        }
-                        output += "\r\n";
-                    }
-                }
-                c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
-                break;
-            */
-            //</editor-fold>                  
+            //</editor-fold>                
             //<editor-fold defaultstate="collapsed" desc="whodrops">
                 case "whodrops":
                     if (sub.length < 2) {
@@ -1297,7 +1230,7 @@ import tools.StringUtil;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="online2">
             case "online2":
-                String text = "Online Players : ";
+                String text1 = "Online Players : ";
                 String cc1 = "Players in Channel 1: ",
                 cc2 = "Players in Channel 2: ",
                 cc3 = "Players in Channel 3: ";
@@ -1325,7 +1258,7 @@ import tools.StringUtil;
                 if (cc3.length() > 22) {
                     cc3 = cc3.substring(0, cc3.length() - 2);
                 }
-                player.dropMessage(6, text);
+                player.dropMessage(6, text1);
                 player.dropMessage(6, cc1);
                 player.dropMessage(6, cc2);
                 player.dropMessage(6, cc3);
@@ -1372,23 +1305,6 @@ import tools.StringUtil;
                 player.getAutobanManager().spam(8);
                 break;
             //</editor-fold>            
-            //<editor-fold defaultstate="collapsed" desc="points (out of function)">
-            /*
-            case "points":
-                player.dropMessage(5, "You have " + c.getVotePoints() + " vote point(s).");
-                if (c.hasVotedAlready()) {
-                    Date currentDate = new Date();
-                    int time = (int) ((int) 86400 - ((currentDate.getTime() / 1000) - c.getVoteTime())); //ugly as fuck
-                    hours = time / 3600;
-                    minutes = time % 3600 / 60;
-                    seconds = time % 3600 % 60;
-                    player.yellowMessage("You have already voted. You can vote again in " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds.");
-                } else {
-                    player.yellowMessage("You are free to vote! Make sure to vote to gain a vote point!");
-                }
-                break;
-            */
-            //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="bosshp">
                 case "bosshp":
                     for(MapleMonster monster : player.getMap().getMonsters()) {
@@ -1405,7 +1321,8 @@ import tools.StringUtil;
                     }
                     break;
             //</editor-fold>    
-            //<editor-fold defaultstate="collapsed" desc="ranks">
+            //<editor-fold defaultstate="collapsed" desc="ranks (old)">
+            /*
             case "ranks":
                 PreparedStatement ps = null;
                 ResultSet rs = null;
@@ -1430,18 +1347,119 @@ import tools.StringUtil;
                     }
                 }
                 break;
+            */
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="stats">
             case "stats":
-                player.message("================================");
-                player.message("\t\t\t\t\t\t\t\tStats");
-                player.message("================================");
-                player.message("Event Points: " + player.getClient().getVotePoints() + "\t\t Vote Points: " + player.getEPoints());
-                player.message("Rebirth Points: " + player.getRbPoints() + "\t\t Reborns: " + player.getRebirths());
-                player.message("Fishing Points: " + player.getFPoints() + "\t\t NX: " + player.getCashShop().getCash(1));
-                player.message ("\t\t\tJump Quest Points: " + player.getJQPoints());
-                player.message("================================");
+                player.yellowMessage("================================");
+                player.yellowMessage("\t\t\t\t\t\t\t\tStats");
+                player.yellowMessage("================================");
+                player.yellowMessage("Event Points: " + player.getClient().getVotePoints() + "\t\t Vote Points: " + player.getEPoints());
+                player.yellowMessage("Rebirth Points: " + player.getRbPoints() + "\t\t Reborns: " + player.getRebirths());
+                player.yellowMessage("Fishing Points: " + player.getFPoints() + "\t\t NX: " + player.getCashShop().getCash(1));
+                player.yellowMessage("\t\t\tJump Quest Points: " + player.getJQPoints());
+                player.yellowMessage("================================");
                 break;
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="social">
+            case "social":
+                player.yellowMessage("================================");
+                player.yellowMessage("\t\t\t\t\t\tSocial commands");
+                player.yellowMessage("================================");
+                player.yellowMessage("highfive   rape       kiss     fuck         slap");
+                player.yellowMessage("dickslap  kick        bite      punch     yell");
+                player.yellowMessage("hug          poke      choke  stare       spank");
+                player.yellowMessage("touch       harass  cheer   spit         weed");
+                player.yellowMessage("pat           smack    wave   buttfuck  smile");
+                player.yellowMessage("================================");
+                break;
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="gacha (Out of function)">
+             /*
+             case "gacha":
+                MapleGachapon.Gachapon gacha = null;
+                String search = StringUtil.joinStringFrom(sub, 1);
+                String gachaName = "";
+                String [] names = {"Henesys", "Ellinia", "Perion", "Kerning City", "Sleepywood", "Mushroom Shrine", "Showa Spa Male", "Showa Spa Female", "New Leaf City", "Nautilus Harbor"};
+                int [] ids = {9100100, 9100101, 9100102, 9100103, 9100104, 9100105, 9100106, 9100107, 9100109, 9100117};
+                for (int i = 0; i < names.length; i++){
+                    if (search.equalsIgnoreCase(names[i])){
+                        gachaName = names[i];
+                        gacha = MapleGachapon.Gachapon.getByNpcId(ids[i]);
+                    }
+                }
+                if (gacha == null){
+                    player.yellowMessage("Please use @gacha <name> where name corresponds to one of the below:");
+                    for (String name : names){
+                        player.yellowMessage(name);
+                    }
+                    break;
+                }
+                String output = "The #b" + gachaName + "#k Gachapon contains the following items.\r\n\r\n";
+                for (int i = 0; i < 2; i++){
+                    for (int id : gacha.getItems(i)){
+                        output += "-" + MapleItemInformationProvider.getInstance().getName(id) + "\r\n";
+                    }
+                }
+                output += "\r\nPlease keep in mind that there are items that are in all gachapons and are not listed here.";
+                c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
+                break;
+            */
+            //</editor-fold>   
+            //<editor-fold defaultstate="collapsed" desc="points (out of function)">
+            /*
+            case "points":
+                player.dropMessage(5, "You have " + c.getVotePoints() + " vote point(s).");
+                if (c.hasVotedAlready()) {
+                    Date currentDate = new Date();
+                    int time = (int) ((int) 86400 - ((currentDate.getTime() / 1000) - c.getVoteTime())); //ugly as fuck
+                    hours = time / 3600;
+                    minutes = time % 3600 / 60;
+                    seconds = time % 3600 % 60;
+                    player.yellowMessage("You have already voted. You can vote again in " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds.");
+                } else {
+                    player.yellowMessage("You are free to vote! Make sure to vote to gain a vote point!");
+                }
+                break;
+            */
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="whatdropfrom (out of function)">
+             /*
+            case "whatdropsfrom":
+                String output = "";
+                if (sub.length < 2) {
+                    player.dropMessage(5, "Please do @whatdropsfrom <monster name>");
+                    break;
+                }
+                String monsterName = StringUtil.joinStringFrom(sub, 1);
+                output = "";
+                int limit = 3;
+                Iterator<Pair<Integer, String>> listIterator = MapleMonsterInformationProvider.getMobsIDsFromName(monsterName).iterator();
+                for (int i = 0; i < limit; i++) {
+                    if(listIterator.hasNext()) {
+                        Pair<Integer, String> data = listIterator.next();
+                        int mobId = data.getLeft();
+                        String mobName = data.getRight();
+                        output += mobName + " drops the following items:\r\n\r\n";
+                        for (MonsterDropEntry drop : MapleMonsterInformationProvider.getInstance().retrieveDrop(mobId)){
+                            try {
+                                String name = MapleItemInformationProvider.getInstance().getName(drop.itemId);
+                                if (name.equals("null") || drop.chance == 0){
+                                    continue;
+                                }
+                                float chance = 1000000 / drop.chance / player.getDropRate();
+                                output += "- " + name + " (1/" + (int) chance + ")\r\n";
+                            } catch (Exception ex){
+                                ex.printStackTrace();
+                                continue;
+                            }
+                        }
+                        output += "\r\n";
+                    }
+                }
+                c.announce(MaplePacketCreator.getNPCTalk(9010000, (byte) 0, output, "00 00", (byte) 0));
+                break;
+            */
             //</editor-fold>
             default:
                 return false;

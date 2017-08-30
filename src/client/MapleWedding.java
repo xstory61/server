@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import client.MapleClient;
 import scripting.event.EventInstanceManager;
 import scripting.npc.NPCScriptManager;
 import server.TimerManager;

@@ -107,41 +107,6 @@ public class GMCommands {
                 break;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="reloadevents">
-            case "pnpc":    
-                int npcId = Integer.parseInt(sub[1]);
-                MapleNPC npc = MapleLifeFactory.getNPC(npcId);
-                int xpos = player.getPosition().x;
-                int ypos = player.getPosition().y;
-                int fh = player.getMap().getFootholds().findBelow(player.getPosition()).getId();
-                if (npc != null && !npc.getName().equalsIgnoreCase("MISSINGNO")) {
-                    npc.setPosition(player.getPosition());
-                    npc.setCy(ypos);
-                    npc.setRx0(xpos + 50);
-                    npc.setRx1(xpos - 50);
-                    npc.setFh(fh);
-                    try {
-                        Connection con = DatabaseConnection.getConnection();
-                        PreparedStatement ps = con.prepareStatement("INSERT INTO spawns ( idd, f, fh, cy, rx0, rx1, type, x, y, mid ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
-                        ps.setInt(1, npcId);
-                        ps.setInt(2, 0);
-                        ps.setInt(3, fh);
-                        ps.setInt(4, ypos);
-                        ps.setInt(5, xpos + 50);
-                        ps.setInt(6, xpos - 50);
-                        ps.setString(7, "n");
-                        ps.setInt(8, xpos);
-                        ps.setInt(9, ypos);
-                        ps.setInt(10, player.getMapId());
-                        ps.executeUpdate();
-                    } catch (SQLException e) {
-                        player.dropMessage("Failed to save NPC to the database");
-                    }
-                    player.getMap().addMapObject(npc);
-                    player.getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc));
-                } else {
-                    player.dropMessage("You have entered an invalid Npc-Id");
-                }
-                    break;
             case "reloadevents":
                 for (Channel ch : Server.getInstance().getAllChannels()) {
                     ch.reloadEventScriptManager();
@@ -1252,12 +1217,17 @@ public class GMCommands {
                 player.changeMap(109020001);
                 break;
             //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="minigame">
             case "minigame":
                 player.changeMap(109070000);
                 break;
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="bomberman">
             case "bomberman":
                 player.changeMap(109010200);
                 break;
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="rlglm">
             case "rlglm":
                 if (sub.length < 2){
                     player.yellowMessage("Syntax: !rlglm <number>");
@@ -1268,10 +1238,12 @@ public class GMCommands {
                     player.changeMap(109010201);
                 }
                 break;
-
-            case "dbobm":
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="dbomb">
+            case "bobm":
                 player.changeMap(109010104);
                 break;
+            //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="giveep">
             case "giveep":{
                 if (sub.length < 3){
@@ -1287,12 +1259,18 @@ public class GMCommands {
             //<editor-fold defaultstate="collapsed" desc="mutemap">
             case "mutemap":
             case "mutem":
-                if(player.getMap().isMuted()) {
-                    player.getMap().setMuted(false);
-                    player.dropMessage(5, "The map you are in has been un-muted.");
-                } else {
+                if(!player.getMap().isMuted()) {
                     player.getMap().setMuted(true);
-                    player.dropMessage(5, "The map you are in has been muted.");
+                    for (MapleCharacter i : player.getMap().getCharacters()){
+                        if (i.getName().equals(player.getName())) i.dropMessage(6, "The map has been muted!");
+                        else i.dropMessage(5, "The map has been muted!");
+                    }
+                } else {
+                    player.getMap().setMuted(false);
+                    for (MapleCharacter i : player.getMap().getCharacters()){
+                        if (i.getName().equals(player.getName())) i.dropMessage(6, "The map has been un-muted!");
+                        else i.dropMessage(5, "The map has been un-muted!");
+                    }
                 }
                 break;
             //</editor-fold>
@@ -1303,15 +1281,22 @@ public class GMCommands {
                     break;
                 }
                 victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
-                if (victim.getMap().isMuted()){
-                    victim.getMap().setMuted(false);
-                    victim.dropMessage(5, "You have been un-muted.");
-                    break;
-                } else {
-                    victim.getMap().setMuted(true);
-                    victim.dropMessage(5, "You have been muted.");
+                if (player.gmLevel() < victim.gmLevel()){
+                    player.setMuted(true);
+                    player.dropMessage(6, "You have been muted.");
+                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + "My mother dropped me when I was little...alot", true));
                     break;
                 }
+                if (!victim.isMuted()){
+                    victim.setMuted(true);
+                    player.dropMessage(6, "The player " + victim.getName() + " has been muted!");
+                    victim.dropMessage(5, "You have been muted.");
+                } else {
+                    victim.setMuted(false);
+                    player.dropMessage(6, "The player " + victim.getName() + " has been un-muted!");
+                    victim.dropMessage(5, "You have been un-muted.");
+                }
+                break;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="whereami">
         case "whereami":
@@ -1337,8 +1322,11 @@ public class GMCommands {
                     break;
                 }
                 victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
+                if (player.gmLevel() < victim.gmLevel()){
+                    Server.getInstance().broadcastMessage(MaplePacketCreator.serverNotice(3, c.getChannel(), player.getMedalText() + player.getName() + " : " + "I suck dicks for living", true));
+                    break;
+                }
                 victim.setHpMp(0);
-                Server.getInstance().broadcastGMMessage(MaplePacketCreator.serverNotice(6, "[GM]: " + player.getName() + " used !kill on " + victim.getName()));
                 break;
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="killmap">
@@ -1369,12 +1357,11 @@ public class GMCommands {
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="reloadmap">
             case "reloadmap":
-                MapleMap oldMap = c.getPlayer().getMap();
+                MapleMap oldMap = player.getMap();
                 MapleMap newMap = c.getChannelServer().getMapFactory().getMap(player.getMapId());
-                for (MapleCharacter ch : oldMap.getCharacters()) {
-                    ch.changeMap(newMap);
+                for (MapleCharacter ch : oldMap.getAllPlayers()) {
+                    ch.changeMap(ch.getMap());
                 }
-                oldMap = null;
                 newMap.respawn();
                 break;
             //</editor-fold>
@@ -1974,7 +1961,7 @@ public class GMCommands {
             //<editor-fold defaultstate="collapsed" desc="warphere">
             case "warphere":
             case "summon":
-            case "whx":
+            case "wh":
                 if (sub.length < 2){
                     player.yellowMessage("Syntax: !warphere <playername>");
                     break;
@@ -2007,6 +1994,50 @@ public class GMCommands {
                         }
                     } else {//If victim isn't in an event instance or is in the same event instance as the one the caller is, just warp them.
                         victim.changeMap(player.getMapId(), player.getMap().findClosestPortal(player.getPosition()));
+                    }
+                    if (player.getClient().getChannel() != victim.getClient().getChannel()) {//And then change channel if needed.
+                        victim.dropMessage("Changing channel, please wait a moment.");
+                        victim.getClient().changeChannel(player.getClient().getChannel());
+                    }
+                } else {
+                    player.dropMessage("Unknown player.");
+                }
+                break;
+                //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="whx">
+            case "whx":
+                if (sub.length < 2){
+                    player.yellowMessage("Syntax: !whx <playername>");
+                    break;
+                }
+                victim = cserv.getPlayerStorage().getCharacterByName(sub[1]);
+                if (victim == null) {//If victim isn't on current channel, loop all channels on current world.
+                    for (Channel ch : srv.getChannelsFromWorld(c.getWorld())) {
+                        victim = ch.getPlayerStorage().getCharacterByName(sub[1]);
+                        if (victim != null) {
+                            break;//We found the person, no need to continue the loop.
+                        }
+                    }
+                }
+                if (victim != null) {
+                    boolean changingEvent = true;
+                    if (victim.getEventInstance() != null) {
+                        if(player.getEventInstance() != null && victim.getEventInstance().getLeaderId() == player.getEventInstance().getLeaderId()) {
+                            changingEvent = false;
+                        } else {
+                            victim.getEventInstance().unregisterPlayer(victim);
+                        }
+                    }
+                    //Attempt to join the warpers instance.
+                    if (player.getEventInstance() != null && changingEvent) {
+                        if (player.getClient().getChannel() == victim.getClient().getChannel()) {//just in case.. you never know...
+                            player.getEventInstance().registerPlayer(victim);
+                            victim.changeMap(player.getEventInstance().getMapInstance(player.getMapId()), player.getPosition());
+                        } else {
+                            player.dropMessage("Target isn't on your channel, not able to warp into event instance.");
+                        }
+                    } else {//If victim isn't in an event instance or is in the same event instance as the one the caller is, just warp them.
+                        victim.changeMap(player.getMap(), player.getPosition());
                     }
                     if (player.getClient().getChannel() != victim.getClient().getChannel()) {//And then change channel if needed.
                         victim.dropMessage("Changing channel, please wait a moment.");

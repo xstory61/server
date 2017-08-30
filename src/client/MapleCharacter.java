@@ -307,6 +307,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     private int rbpoints;
     private int epoints;
     private int fpoints;
+    private boolean isMuted = false;
     private MapleCharacter() {
         useCS = false;
         
@@ -6003,6 +6004,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject {
     
     public void addFPoints(byte pts){
         this.fpoints += pts;
+    }
+    
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean mute) {
+        isMuted = mute;
     }
     // end
 

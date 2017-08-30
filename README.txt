@@ -1,5 +1,33 @@
 Update list by: Art
 
+
+Date 08/30/2017
+
+Added:
+	@social
+	@help (not finished)
+	help NPC 9201143
+	Added player.ismuted() to the chat GeneralChatHandler
+	!whx (doesnt work well right)
+	
+	
+Changed:
+	!wh instead of whx for warphere
+	@smega item is not required anymore for interns rank +
+	can't @smega if map you are in or you are muted.
+	staff lower rank cannot kill staff higher rank anymore (instead super megaphone will pop up with a surprise :') )
+	staff lower rank cannot mute staff higher rank anymore (instead super megaphone will pop up with a another surprise :') )
+	rewrote !mutem and !mute command. Now wont affect each other, work seperately.
+	
+	
+Fixed:
+	Organized the code in GeneralChatHandler
+	!reloadmap reloads everyone in the map now
+	
+
+======================================================================================================================
+
+
 Date 08/29/2017
 
 Added:
@@ -11,11 +39,11 @@ Added:
 	Delete Character NPC 1052005
 	
 Edited:
-	MapleWedding.java (incase doesnt work line 117 I had no chance to test it cause of SQL)
+	MapleWedding.java (incase doesnt work line 117 I had no chance to test it cause of sql)
 
 
 
-
+======================================================================================================================
 
 
 
@@ -53,6 +81,6 @@ Date: 08/28/2017
 
 - And some more I forgot about
 
-
+======================================================================================================================
 
 
